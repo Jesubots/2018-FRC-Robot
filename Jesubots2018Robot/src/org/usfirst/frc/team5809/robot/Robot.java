@@ -9,6 +9,8 @@ package org.usfirst.frc.team5809.robot;
 
 import org.usfirst.frc.team5809.robot.commands.ArcadeDrive;
 import org.usfirst.frc.team5809.robot.subsystems.DriveTrain;
+import org.usfirst.frc.team5809.robot.subsystems.Jaws;
+import org.usfirst.frc.team5809.robot.subsystems.Lift;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -24,10 +26,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends TimedRobot {
-	
+
 	public static volatile DriveTrain driveTrain = null;
-	
-	//public static final driveTrain kDriveTrain		= new DriveTrain();
+	public static volatile Jaws jaws = null;
+	public static volatile Lift lift = null;
+
+	// public static final driveTrain kDriveTrain = new DriveTrain();
 	public static OI m_oi;
 
 	Command m_autonomousCommand;
@@ -41,9 +45,12 @@ public class Robot extends TimedRobot {
 	public void robotInit() {
 		m_oi = new OI();
 		driveTrain = DriveTrain.getInstance();
+		jaws = Jaws.getInstance();
+		lift = Lift.getInstance();
+
 		m_chooser.addDefault("Default Auto", new ArcadeDrive());
-		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", m_chooser);
+		SmartDashboard.putNumber("NavX Yaw", driveTrain.getAhrs().getYaw());
 	}
 
 	/**
@@ -61,17 +68,6 @@ public class Robot extends TimedRobot {
 		Scheduler.getInstance().run();
 	}
 
-	/**
-	 * This autonomous (along with the chooser code above) shows how to select
-	 * between different autonomous modes using the dashboard. The sendable
-	 * chooser code works with the Java SmartDashboard. If you prefer the
-	 * LabVIEW Dashboard, remove all of the chooser code and uncomment the
-	 * getString code to get the auto name from the text box below the Gyro
-	 *
-	 * <p>You can add additional auto modes by adding additional commands to the
-	 * chooser code above (like the commented example) or additional comparisons
-	 * to the switch structure below with additional strings & commands.
-	 */
 	@Override
 	public void autonomousInit() {
 		m_autonomousCommand = m_chooser.getSelected();
