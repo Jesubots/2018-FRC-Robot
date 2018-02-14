@@ -29,8 +29,9 @@ public class Lift extends Subsystem {
     public WPI_TalonSRX rightLift = new WPI_TalonSRX(RobotMap.rightLiftCAN);
     
     public DifferentialDrive liftDrive = new DifferentialDrive(leftLift, rightLift);
-
+    
     public void initDefaultCommand() {
+    	liftDrive.setSafetyEnabled(false);
     }
     
     public void liftUp(double power){

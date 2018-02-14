@@ -27,8 +27,7 @@ public class RobotMap {
 	// number and the module. For example you with a rangefinder:
 	// public static int rangefinderPort = 1;
 	// public static int rangefinderModule = 1;
-	public static final Joystick driverStick = new Joystick(0);
-	public static final Joystick operatorStick = new Joystick(1);
+	
 	
 	public static final double deadBand = .3;
 
@@ -37,11 +36,12 @@ public class RobotMap {
 	public static int backLeftCAN = 0;
 	public static int backRightCAN = 3;
 
-	public static int jawLeftCAN = 2;
-	public static int jawRightCAN = 0;
+	public static int jawCAN = 2;
 	public static double openJawsTimeout = 3.0;
 	public static double closeJawsTimeout = 3.0;
-	public static double defaultJawsPower = .25;
+	public static double stopJawsTimeout = .01;
+	public static double defaultGrabJawsPower = .75;
+	public static double defaultSpitJawsPower = 1.0;
 	
 	public static int leftLiftCAN = 0;
 	public static int rightLiftCAN = 1;

@@ -42,19 +42,19 @@ public class ArcadeDrive extends Command {
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
 
-		if (isNotDeadband(RobotMap.driverStick.getY(Hand.kLeft)) || isNotDeadband(RobotMap.driverStick.getX(Hand.kRight))) {
+		if (isNotDeadband(OI.driverStick.getY(Hand.kLeft)) || isNotDeadband(OI.driverStick.getX(Hand.kRight))) {
 			// Robot.driveTrain.arcadeDrive(OI.driverStick.getY(Hand.kLeft),
 			// OI.driverStick.getX(Hand.kRight), RobotMap.deadBand, true);
-			Robot.driveTrain.arcadeDrive(RobotMap.driverStick.getY(Hand.kLeft), RobotMap.driverStick.getX(Hand.kRight),
+			Robot.driveTrain.arcadeDrive(OI.driverStick.getY(Hand.kLeft), OI.driverStick.getX(Hand.kRight),
 					RobotMap.deadBand, true);
-			// if(isNotDeadband(RobotMap.Driver_Gamepad.getY(Hand.kLeft)))
-			// System.out.println(RobotMap.Driver_Gamepad.getY(Hand.kLeft));
-			// if(isNotDeadband(RobotMap.Driver_Gamepad.getX(Hand.kRight)))
-			// System.out.println(RobotMap.Driver_Gamepad.getX(Hand.kRight));
+			// if(isNotDeadband(OI.Driver_Gamepad.getY(Hand.kLeft)))
+			// System.out.println(OI.Driver_Gamepad.getY(Hand.kLeft));
+			// if(isNotDeadband(OI.Driver_Gamepad.getX(Hand.kRight)))
+			// System.out.println(OI.Driver_Gamepad.getX(Hand.kRight));
 		} else {
 			Robot.driveTrain.setDriveSignal(new DriveSignal(0, 0));
 		}
-		if (!isNotDeadband(RobotMap.driverStick.getY(Hand.kLeft)) && !isNotDeadband(RobotMap.driverStick.getX(Hand.kRight))) {
+		if (!isNotDeadband(OI.driverStick.getY(Hand.kLeft)) && !isNotDeadband(OI.driverStick.getX(Hand.kRight))) {
 			// System.out.println("Is deadband");
 		}
 		// else if(isNotDeadband(HW.Driver_Gamepad.getTriggerAxis(Hand.kLeft))

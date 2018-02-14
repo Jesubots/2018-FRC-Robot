@@ -8,18 +8,16 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class CloseJaws extends Command {
+public class GrabJaws extends Command {
 
-	public CloseJaws() {
+	public GrabJaws() {
 		requires(Robot.jaws);
 	}
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
-
-		Robot.jaws.closeJaws(RobotMap.defaultJawsPower);
+		Robot.jaws.grabJaws(RobotMap.defaultGrabJawsPower);
 		setTimeout(RobotMap.closeJawsTimeout);
-
 	}
 
 	// Called repeatedly when this Command is scheduled to run

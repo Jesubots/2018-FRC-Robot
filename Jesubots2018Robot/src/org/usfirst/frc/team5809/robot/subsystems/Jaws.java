@@ -24,22 +24,28 @@ public class Jaws extends Subsystem {
 		return instance;
 
 	}
+	
+	public WPI_TalonSRX jawDrive = new WPI_TalonSRX(RobotMap.jawCAN);
 
-	public WPI_TalonSRX jawLeft = new WPI_TalonSRX(RobotMap.jawLeftCAN);
-	public WPI_TalonSRX jawRight = new WPI_TalonSRX(RobotMap.jawRightCAN);
-
-	public DifferentialDrive jawDrive = new DifferentialDrive(jawLeft, jawRight);
-
+	public Jaws () {
+		jawDrive.set(0.0);
+		jawDrive.setSafetyEnabled(false);
+	}
+	
 	public void initDefaultCommand() {
-		// \\
+		jawDrive.setSafetyEnabled(false);
 	}
 
-	public void openJaws(double jawSpeed) {
-		jawDrive.tankDrive(jawSpeed, -jawSpeed);
+	public void grabJaws(double jawSpeed) {
+		jawDrive.set(-jawSpeed);
 	}
 
-	public void closeJaws(double jawSpeed) {
-		jawDrive.tankDrive(-jawSpeed, jawSpeed);
+	public void spitJaws(double jawSpeed) {
+		jawDrive.set(jawSpeed);
+	}
+	
+	public void stopJaws() {
+		jawDrive.set(0);
 	}
 
 }

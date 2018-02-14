@@ -10,8 +10,10 @@ package org.usfirst.frc.team5809.robot;
 import org.usfirst.frc.team5809.lib.drivers.JesubotsButton;
 import org.usfirst.frc.team5809.lib.drivers.JesubotsButton.LogitechButton;
 import org.usfirst.frc.team5809.robot.RobotMap;
-import org.usfirst.frc.team5809.robot.commands.jaws.CloseJaws;
-import org.usfirst.frc.team5809.robot.commands.jaws.OpenJaws;
+import org.usfirst.frc.team5809.robot.commands.jaws.SpitJaws;
+import org.usfirst.frc.team5809.robot.commands.jaws.StopJaws;
+import org.usfirst.frc.team5809.robot.commands.jaws.GrabJaws;
+import org.usfirst.frc.team5809.robot.subsystems.DriveTrain;
 
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -20,9 +22,14 @@ import edu.wpi.first.wpilibj.Joystick;
  * interface to the commands and command groups that allow control of the robot.
  */
 public class OI {
+	
+	public static OI instance;
 
-	public static JesubotsButton openJawsButton = new JesubotsButton(RobotMap.driverStick, LogitechButton.X);
-	public static JesubotsButton closeJawsButton = new JesubotsButton(RobotMap.driverStick, LogitechButton.Y);
+	public static final Joystick driverStick = new Joystick(0);
+	//public static final Joystick operatorStick = new Joystick(1);
+	
+	public static JesubotsButton grabJawsButton = new JesubotsButton(OI.driverStick, LogitechButton.X);
+	public static JesubotsButton spitJawsButton = new JesubotsButton(OI.driverStick, LogitechButton.Y);
 
 	private static double driveTime;
 	private static double driveMag;
@@ -43,10 +50,16 @@ public class OI {
 	public static void setPivotTurnDegree(double pivotTurnDegree) {
 		OI.pivotTurnDegree = pivotTurnDegree;
 	}
+	
+	public OI() {
+   	 	initButtons();
+    }
 
-	public void InitButtons() {
-		OI.openJawsButton.whenPressed(new OpenJaws());
-		OI.closeJawsButton.whenPressed(new CloseJaws());
-
+	public void initButtons() {
+		OI.grabJawsButton.whenPressed(new GrabJaws());
+		OI.spitJawsButton.whenPressed(new SpitJaws());
+		
+		OI.grabJawsButton.whenReleased(new StopJaws());
+		OI.spitJawsButton.whenReleased(new StopJaws());
 	}
 }

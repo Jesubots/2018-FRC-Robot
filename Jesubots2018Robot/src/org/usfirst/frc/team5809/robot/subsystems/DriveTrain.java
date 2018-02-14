@@ -133,6 +133,7 @@ public class DriveTrain extends Subsystem {
 *		rightFollower.setExpiration(.5);
 */		
 
+		// robotDrive.setSafetyEnabled(false);
 		
 		leftMaster.configOpenloopRamp(2, 0);
 		leftFollower.set(ControlMode.Follower, leftMaster.getDeviceID()); // switch
@@ -277,5 +278,9 @@ public class DriveTrain extends Subsystem {
 	public void resetEncoders() {
 		leftMaster.setSelectedSensorPosition(0, 0, 0);
 		rightMaster.setSelectedSensorPosition(0, 0, 0);
+	}
+	
+	public void setSafetyOff(){
+		robotDrive.setSafetyEnabled(false);
 	}
 }

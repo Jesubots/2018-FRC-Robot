@@ -32,7 +32,7 @@ public class Robot extends TimedRobot {
 	public static volatile Lift lift = null;
 
 	// public static final driveTrain kDriveTrain = new DriveTrain();
-	public static OI m_oi;
+	public static OI m_oi = null;
 
 	Command m_autonomousCommand;
 	SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -43,7 +43,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotInit() {
-		m_oi = new OI();
 		driveTrain = DriveTrain.getInstance();
 		jaws = Jaws.getInstance();
 		lift = Lift.getInstance();
@@ -51,6 +50,8 @@ public class Robot extends TimedRobot {
 		m_chooser.addDefault("Default Auto", new ArcadeDrive());
 		SmartDashboard.putData("Auto mode", m_chooser);
 		SmartDashboard.putNumber("NavX Yaw", driveTrain.getAhrs().getYaw());
+		
+		m_oi = new OI();
 	}
 
 	/**
@@ -71,6 +72,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousInit() {
 		m_autonomousCommand = m_chooser.getSelected();
+		driveTrain.setSafetyOff();
 
 		/*
 		 * String autoSelected = SmartDashboard.getString("Auto Selector",
@@ -99,6 +101,8 @@ public class Robot extends TimedRobot {
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
 		// this line or comment it out.
+		driveTrain.setSafetyOff();
+		
 		if (m_autonomousCommand != null) {
 			m_autonomousCommand.cancel();
 		}
