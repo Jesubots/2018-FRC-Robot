@@ -42,6 +42,7 @@ public class DriveTrain extends Subsystem {
 
 	AHRS ahrs;
 	PivotTurnPID pivotTurnPID;
+	DriveStraightPID driveStraightPID;
 
 	DifferentialDrive robotDrive = new DifferentialDrive(leftMaster, rightMaster);
 
@@ -192,6 +193,7 @@ public class DriveTrain extends Subsystem {
 		}
 
 		pivotTurnPID = PivotTurnPID.getInstance();
+		driveStraightPID = DriveStraightPID.getInstance();
 
 	}
 
@@ -204,6 +206,41 @@ public class DriveTrain extends Subsystem {
 
 		return instance;
 
+	}
+	
+	public void DriveEncoderPIDInit(double dDistance){
+		//System.out.println("DriveMotorSubsystem.PIDInit");
+		driveEncoderPID.setSetpoint(dDistance);
+		driveEncoderPID.enable();	
+		 //System.out.println("Enabled = " + driveStraightPID.getPIDController().isEnabled());
+		}
+
+	public void DriveEncoderPIDStop(){
+		//System.out.println("Enabled = " + driveStraightPID.getPIDController().isEnabled());
+		//System.out.println("DriveMotorSubsystem.PIDStop");
+		driveEncoderPID.getPIDController().reset();
+		robotDrive.stopMotor();
+		f_magnitude = 0;
+	}
+	
+	public void DriveStraightPIDSetMag(double dMag){
+		f_magnitude = -dMag;
+	}
+   
+	public void DriveStraightPIDInit(double dMag, double dDeg){
+		ahrs.zeroYaw();
+		System.out.println("DriveMotorSubsystem.PIDInit");
+		f_magnitude = -dMag;
+		driveStraightPID.setSetpoint(dDeg);
+		driveStraightPID.enable();	
+		 System.out.println("Enabled = " + driveStraightPID.getPIDController().isEnabled());
+		}
+
+	public void DriveStraightPIDStop(){
+		System.out.println("Enabled = " + driveStraightPID.getPIDController().isEnabled());
+		System.out.println("DriveMotorSubsystem.PIDStop");
+		driveStraightPID.getPIDController().reset();
+		robotDrive.stopMotor();
 	}
 
 	// Put methods for controlling this subsystem

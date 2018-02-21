@@ -25,11 +25,11 @@ public class PivotTurnPID extends PIDSubsystem {
 	}
 
 	public PivotTurnPID() {
-		super("RotateToAngle PID", RobotMap.RotateToAnglePIDMap.kP, RobotMap.RotateToAnglePIDMap.kI,
-				RobotMap.RotateToAnglePIDMap.kD, RobotMap.RotateToAnglePIDMap.kF);
+		super("RotateToAngle PID", RobotMap.PivotTurnPIDMap.kP, RobotMap.PivotTurnPIDMap.kI,
+				RobotMap.PivotTurnPIDMap.kD, RobotMap.PivotTurnPIDMap.kF);
 		setInputRange(-180.0f, 180.0f);
 		setOutputRange(-1.0, 1.0);
-		setAbsoluteTolerance(RobotMap.RotateToAnglePIDMap.kToleranceDegrees);
+		setAbsoluteTolerance(RobotMap.PivotTurnPIDMap.kToleranceDegrees);
 		getPIDController().setContinuous(true);
 	}
 

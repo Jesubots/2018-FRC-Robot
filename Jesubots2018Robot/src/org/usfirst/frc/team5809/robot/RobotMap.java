@@ -54,7 +54,15 @@ public class RobotMap {
 	public static int leftEncoder = 0;
 	public static int rightEncoder = 0;
 
-	public class RotateToAnglePIDMap {
+	public class PivotTurnPIDMap {
+		public static final double kP = 0.026;
+		public static final double kI = 0.0026;
+		public static final double kD = 0.13;
+		public static final double kF = 0.1;
+		public static final double kToleranceDegrees = 1.0f;
+	}
+	
+	public class DriveStraightPIDMap {
 		public static final double kP = 0.026;
 		public static final double kI = 0.0026;
 		public static final double kD = 0.13;
