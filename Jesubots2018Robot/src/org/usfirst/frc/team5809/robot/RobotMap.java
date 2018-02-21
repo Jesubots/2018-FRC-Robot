@@ -50,10 +50,9 @@ public class RobotMap {
 	public static double minMotorPower = 0.0;
 	public static double tolerancePercent = 2;
 
-	public static int backLeftEncoder = 0;
-	public static int backRightEncoder = 0;
-	public static int frontLeftEncoder = 0;
-	public static int frontRightEncoder = 0;
+	public static int liftEncoder = 0;
+	public static int leftEncoder = 0;
+	public static int rightEncoder = 0;
 
 	public class RotateToAnglePIDMap {
 		public static final double kP = 0.026;

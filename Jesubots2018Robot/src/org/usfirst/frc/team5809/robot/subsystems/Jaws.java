@@ -4,6 +4,7 @@ import org.usfirst.frc.team5809.robot.RobotMap;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
@@ -25,7 +26,7 @@ public class Jaws extends Subsystem {
 
 	}
 	
-	public WPI_TalonSRX jawDrive = new WPI_TalonSRX(RobotMap.jawCAN);
+	public VictorSP jawDrive = new VictorSP(RobotMap.jawCAN);
 
 	public Jaws () {
 		jawDrive.set(0.0);

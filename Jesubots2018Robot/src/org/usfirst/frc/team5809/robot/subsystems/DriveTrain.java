@@ -33,8 +33,10 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
  */
 public class DriveTrain extends Subsystem {
 
-	public WPI_TalonSRX leftFollower = new WPI_TalonSRX(RobotMap.backLeftCAN);
-	public WPI_TalonSRX rightFollower = new WPI_TalonSRX(RobotMap.backRightCAN);
+	public WPI_TalonSRX leftFollowerBack = new WPI_TalonSRX(RobotMap.backLeftCAN);
+	public WPI_TalonSRX rightFollowerBack = new WPI_TalonSRX(RobotMap.backRightCAN);
+	public WPI_TalonSRX leftFollowerFront = new WPI_TalonSRX(RobotMap.backLeftCAN);
+	public WPI_TalonSRX rightFollowerFront = new WPI_TalonSRX(RobotMap.backRightCAN);
 	public WPI_TalonSRX rightMaster = new WPI_TalonSRX(RobotMap.frontRightCAN);
 	public WPI_TalonSRX leftMaster = new WPI_TalonSRX(RobotMap.frontLeftCAN);
 
@@ -136,29 +138,35 @@ public class DriveTrain extends Subsystem {
 		// robotDrive.setSafetyEnabled(false);
 		
 		leftMaster.configOpenloopRamp(2, 0);
-		leftFollower.set(ControlMode.Follower, leftMaster.getDeviceID()); // switch
-																			// 6
-																			// to
-																			// leftMaster.getDeviceId()
-		leftFollower.configOpenloopRamp(0, 0);
-		// leftFront.set(0);
 		rightMaster.configOpenloopRamp(2, 0);
-		rightFollower.set(ControlMode.Follower, rightMaster.getDeviceID()); // switch
-																			// 6
-																			// to
-																			// rightMaster.getDeviceID()
-		rightFollower.configOpenloopRamp(0, 0);
 
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
-		leftFollower.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
-		rightFollower.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
 
 		leftMaster.setSensorPhase(true);
-		leftFollower.setSensorPhase(true);
 		rightMaster.setSensorPhase(true);
-		rightFollower.setSensorPhase(true);
-
+		
+		/*
+		*leftFollowerBack.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+		*rightFollowerBack.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+		*leftFollowerFront.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+		*rightFollowerFront.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+		*leftFollowerBack.setSensorPhase(true);
+		*rightFollowerBack.setSensorPhase(true);
+		*leftFollowerFront.setSensorPhase(true);
+		*rightFollowerFront.setSensorPhase(true);
+		*/
+				
+		rightFollowerBack.configOpenloopRamp(0, 0);
+		leftFollowerBack.configOpenloopRamp(0, 0);
+		rightFollowerFront.configOpenloopRamp(0, 0);
+		leftFollowerFront.configOpenloopRamp(0, 0);
+		
+		rightFollowerBack.set(ControlMode.Follower, rightMaster.getDeviceID());
+		leftFollowerBack.set(ControlMode.Follower, leftMaster.getDeviceID());
+		rightFollowerFront.set(ControlMode.Follower, rightMaster.getDeviceID());
+		leftFollowerFront.set(ControlMode.Follower, leftMaster.getDeviceID());
+		
 		setCoast();
 
 		/*
@@ -260,15 +268,21 @@ public class DriveTrain extends Subsystem {
 	public void setBrake() {
 		leftMaster.setNeutralMode(NeutralMode.Brake);
 		rightMaster.setNeutralMode(NeutralMode.Brake);
-		leftFollower.setNeutralMode(NeutralMode.Brake);
-		rightFollower.setNeutralMode(NeutralMode.Brake);
+		
+		leftFollowerBack.setNeutralMode(NeutralMode.Brake);
+		rightFollowerBack.setNeutralMode(NeutralMode.Brake);
+		leftFollowerFront.setNeutralMode(NeutralMode.Brake);
+		rightFollowerFront.setNeutralMode(NeutralMode.Brake);
 	}
 
 	public void setCoast() {
 		leftMaster.setNeutralMode(NeutralMode.Coast);
 		rightMaster.setNeutralMode(NeutralMode.Coast);
-		leftFollower.setNeutralMode(NeutralMode.Coast);
-		rightFollower.setNeutralMode(NeutralMode.Coast);
+		
+		leftFollowerBack.setNeutralMode(NeutralMode.Coast);
+		rightFollowerBack.setNeutralMode(NeutralMode.Coast);
+		leftFollowerFront.setNeutralMode(NeutralMode.Coast);
+		rightFollowerFront.setNeutralMode(NeutralMode.Coast);
 	}
 
 	public double getEncoderValue() {
