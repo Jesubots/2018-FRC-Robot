@@ -9,26 +9,23 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class DriveStraightDistance extends Command {
+public class DriveStraightEncoders extends Command {
 
-	private double commandTarget  = 0.0;
-	private boolean initFromOI     = true;
-	double driveTimeout = 15;
+	private double leftEnc = 0.0;
+	private double rightEnc = 0.0;
+	private double dMag = 0.0;
+	private double driveTimeout;
+	private double target = 0.0;
 
-    public DriveStraightDistance() {
-        // Use requires() here to declare subsystem dependencies
+    public DriveStraightEncoders() {
     	requires(Robot.driveTrain);
+    	
+    	target = 4096;
+    	dMag = -OI.getDriveMag();
+    	
+    	driveTimeout = OI.getDriveTime();
     }
-    public DriveStraightDistance(double distance, double commandTimeout) {
-    	
-    	
-    	commandTarget = distance;
-    	initFromOI = false;
-    	driveTimeout = commandTimeout;
-    	
-        // Use requires() here to declare subsystem dependencies
-    	requires(Robot.driveTrain);
-    }
+    
 
     // Called just before this Command runs the first time
     protected void initialize() {
@@ -37,14 +34,21 @@ public class DriveStraightDistance extends Command {
         
     	Robot.driveTrain.setBrake();
     	
-    	if(initFromOI) {
-        	commandTarget   = OI.getEncoderPosition();
-        	setTimeout(10);
-        }
+    	System.out.println("left Encoder = " + leftEnc + " target = " + target);
+	    while(leftEnc > rightEnc){
+	    	Robot.driveTrain.DriveByAngleValues(dMag - .2, dMag + .2);
+	    } 
+	    while(leftEnc < rightEnc){
+	        Robot.driveTrain.DriveByAngleValues(dMag + .2, dMag - .2);
+	    } 
+	    while(leftEnc == rightEnc){
+	        Robot.driveTrain.DriveByAngleValues(dMag, dMag);
+	    }
     	
-    	Robot.driveTrain.DriveStraightPIDInit(0.0, 0.0);
-    	Robot.driveTrain.DriveEncoderPIDInit(commandTarget);
-    	Robot.driveTrain.resetEncoders();
+    	
+    	//Robot.driveTrain.DriveStraightPIDInit(0.0, 0.0);
+    	//Robot.driveTrain.DriveEncoderPIDInit(commandTarget);
+    	//Robot.driveTrain.resetEncoders();
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -57,21 +61,19 @@ public class DriveStraightDistance extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-    	return (Math.abs(commandTarget - Robot.driveTrain.getEncoderValue()) < 100) || isTimedOut();
+    	return isTimedOut();
     }
 
     // Called once after isFinished returns true
     protected void end() {
-    	Robot.driveTrain.DriveEncoderPIDStop();
-    	Robot.driveTrain.DriveStraightPIDStop();
+    	Robot.driveTrain.Stop();
    // 	Robot.driveTrain.setCoast();
     }
 
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
-    	Robot.driveTrain.DriveEncoderPIDStop();
-    	Robot.driveTrain.DriveStraightPIDStop();
+    	Robot.driveTrain.Stop();
  //   	Robot.driveTrain.setCoast();
     }
 }

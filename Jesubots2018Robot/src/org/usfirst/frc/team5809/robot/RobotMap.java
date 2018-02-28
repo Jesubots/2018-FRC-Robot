@@ -7,9 +7,7 @@
 
 package org.usfirst.frc.team5809.robot;
 
-import org.usfirst.frc.team5809.lib.drivers.JesubotsButton;
 
-import edu.wpi.first.wpilibj.Joystick;
 
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
@@ -31,10 +29,12 @@ public class RobotMap {
 	
 	public static final double deadBand = .3;
 
-	public static int frontLeftCAN = 1;
-	public static int frontRightCAN = 4;
+	public static int frontLeftCAN = 5;
+	public static int frontRightCAN = 7;
 	public static int backLeftCAN = 0;
-	public static int backRightCAN = 3;
+	public static int backRightCAN = 1;
+	public static int midLeftCAN = 4;
+	public static int midRightCAN = 3;
 
 	public static int jawCAN = 2;
 	public static double openJawsTimeout = 3.0;
@@ -53,6 +53,11 @@ public class RobotMap {
 	public static int liftEncoder = 0;
 	public static int leftEncoder = 0;
 	public static int rightEncoder = 0;
+	
+	public static double defaultDriveMag = 0.5;
+	public static double defaultDriveDistanceValue = 0;
+	public static double defaultDriveTimeValue = 0;
+	public static double defaultPivotTurn = 90.0;
 
 	public class PivotTurnPIDMap {
 		public static final double kP = 0.026;

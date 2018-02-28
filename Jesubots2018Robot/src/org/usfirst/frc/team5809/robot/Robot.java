@@ -8,6 +8,10 @@
 package org.usfirst.frc.team5809.robot;
 
 import org.usfirst.frc.team5809.robot.commands.ArcadeDrive;
+import org.usfirst.frc.team5809.robot.commands.PID.DriveStraightDistance;
+import org.usfirst.frc.team5809.robot.commands.PID.DriveStraightEncoders;
+import org.usfirst.frc.team5809.robot.commands.PID.DriveStraightTime;
+import org.usfirst.frc.team5809.robot.commands.PID.PivotTurn;
 import org.usfirst.frc.team5809.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team5809.robot.subsystems.Jaws;
 import org.usfirst.frc.team5809.robot.subsystems.Lift;
@@ -46,10 +50,21 @@ public class Robot extends TimedRobot {
 		driveTrain = DriveTrain.getInstance();
 		jaws = Jaws.getInstance();
 		lift = Lift.getInstance();
+		
+		
 
 		m_chooser.addDefault("Default Auto", new ArcadeDrive());
+		m_chooser.addObject("Drive Straight Time", new DriveStraightTime());
+		m_chooser.addObject("Drive Straight Distance", new DriveStraightDistance());
+		m_chooser.addObject("Drive Straight Encoders", new DriveStraightEncoders());
+		m_chooser.addObject("Pivot Turn", new PivotTurn());
 		SmartDashboard.putData("Auto mode", m_chooser);
 		SmartDashboard.putNumber("NavX Yaw", driveTrain.getAhrs().getYaw());
+		SmartDashboard.putNumber("Drive Straight Distance", RobotMap.defaultDriveDistanceValue);
+		SmartDashboard.putNumber("Drive Straight Time", RobotMap.defaultDriveTimeValue);
+		SmartDashboard.putNumber("DriveMag", RobotMap.defaultDriveMag);
+		SmartDashboard.putNumber("Pivot Turn Degrees", RobotMap.defaultPivotTurn);
+		
 		
 		m_oi = new OI();
 	}
@@ -74,12 +89,10 @@ public class Robot extends TimedRobot {
 		m_autonomousCommand = m_chooser.getSelected();
 		driveTrain.setSafetyOff();
 
-		/*
-		 * String autoSelected = SmartDashboard.getString("Auto Selector",
-		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-		 * = new MyAutoCommand(); break; case "Default Auto": default:
-		 * autonomousCommand = new ExampleCommand(); break; }
-		 */
+		m_oi.setDriveTime(SmartDashboard.getNumber("Drive Straight Time",0.0));
+		m_oi.setEncoderPosition(SmartDashboard.getNumber("Drive Straight Distance",0.0));
+		m_oi.setDriveMag(SmartDashboard.getNumber("DriveMag",0.0));
+		m_oi.setPivotTurnDegree(SmartDashboard.getNumber("Pivot Turn Degrees",0.0));
 
 		// schedule the autonomous command (example)
 		if (m_autonomousCommand != null) {

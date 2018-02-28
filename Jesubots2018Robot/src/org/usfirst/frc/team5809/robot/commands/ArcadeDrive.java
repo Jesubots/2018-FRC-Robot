@@ -4,7 +4,7 @@ import org.usfirst.frc.team5809.robot.OI;
 import org.usfirst.frc.team5809.robot.Robot;
 import org.usfirst.frc.team5809.robot.RobotMap;
 import org.usfirst.frc.team5809.lib.drivers.DriveSignal;
-import org.usfirst.frc.team5809.robot.subsystems.DriveTrain;
+//import org.usfirst.frc.team5809.robot.subsystems.DriveTrain;
 //import org.spectrum3847.lib.drivers.DriveSignal;
 //import org.spectrum3847.lib.util.Util;
 //import org.spectrum3847.robot.HW;
@@ -42,10 +42,10 @@ public class ArcadeDrive extends Command {
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
 
-		if (isNotDeadband(OI.driverStick.getY(Hand.kLeft)) || isNotDeadband(OI.driverStick.getX(Hand.kRight))) {
+		if (isNotDeadband(OI.driverStick.getY(Hand.kLeft)) || isNotDeadband(OI.driverStick.getZ(/*Hand.kRight*/))) {
 			// Robot.driveTrain.arcadeDrive(OI.driverStick.getY(Hand.kLeft),
 			// OI.driverStick.getX(Hand.kRight), RobotMap.deadBand, true);
-			Robot.driveTrain.arcadeDrive(OI.driverStick.getY(Hand.kLeft), OI.driverStick.getX(Hand.kRight),
+			Robot.driveTrain.arcadeDrive(OI.driverStick.getY(Hand.kLeft), OI.driverStick.getZ(/*Hand.kRight*/),
 					RobotMap.deadBand, true);
 			// if(isNotDeadband(OI.Driver_Gamepad.getY(Hand.kLeft)))
 			// System.out.println(OI.Driver_Gamepad.getY(Hand.kLeft));
@@ -54,7 +54,7 @@ public class ArcadeDrive extends Command {
 		} else {
 			Robot.driveTrain.setDriveSignal(new DriveSignal(0, 0));
 		}
-		if (!isNotDeadband(OI.driverStick.getY(Hand.kLeft)) && !isNotDeadband(OI.driverStick.getX(Hand.kRight))) {
+		if (!isNotDeadband(OI.driverStick.getY(Hand.kLeft)) && !isNotDeadband(OI.driverStick.getZ(/*Hand.kRight*/))) {
 			// System.out.println("Is deadband");
 		}
 		// else if(isNotDeadband(HW.Driver_Gamepad.getTriggerAxis(Hand.kLeft))

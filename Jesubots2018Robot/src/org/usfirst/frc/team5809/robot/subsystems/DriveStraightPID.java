@@ -38,12 +38,12 @@ public class DriveStraightPID extends PIDSubsystem {
 	}
 */
 	protected double returnPIDInput(){
-	  //  System.out.println("DriveStraightPID.returnPIDInput.Navx Angle" + Robot.driveTrain.ahrs.getYaw());
+	    System.out.println("DriveStraightPID.returnPIDInput.Navx Angle" + Robot.driveTrain.ahrs.getYaw());
 		return Robot.driveTrain.ahrs.getYaw();
 	}
 
 	protected void usePIDOutput(double output){
-		double localOutput=Math.signum(output)*Math.max(Math.abs(output),RobotMap.minMotorPower);
+		double localOutput=-Math.signum(output)*Math.max(Math.abs(output),RobotMap.minMotorPower);
 		
 		 System.out.println("DriveStraightPID::UsePIDOutput::");
 		// System.out.print  ("   Enabled = " + getPIDController().isEnabled());

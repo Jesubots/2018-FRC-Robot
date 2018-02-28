@@ -6,39 +6,31 @@ import org.usfirst.frc.team5809.robot.RobotMap;
 import org.usfirst.frc.team5809.lib.drivers.DriveSignal;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
-import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motion.*;
+
 
 //import org.usfirst.frc.team5809.robot.Robot;
 
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 /**
  *
  */
 public class DriveTrain extends Subsystem {
 
-	public WPI_TalonSRX leftFollowerBack = new WPI_TalonSRX(RobotMap.backLeftCAN);
-	public WPI_TalonSRX rightFollowerBack = new WPI_TalonSRX(RobotMap.backRightCAN);
-	public WPI_TalonSRX leftFollowerFront = new WPI_TalonSRX(RobotMap.backLeftCAN);
-	public WPI_TalonSRX rightFollowerFront = new WPI_TalonSRX(RobotMap.backRightCAN);
-	public WPI_TalonSRX rightMaster = new WPI_TalonSRX(RobotMap.frontRightCAN);
-	public WPI_TalonSRX leftMaster = new WPI_TalonSRX(RobotMap.frontLeftCAN);
+	public WPI_TalonSRX leftFollowerBack = new WPI_TalonSRX(RobotMap.frontLeftCAN);
+	public WPI_TalonSRX rightFollowerBack = new WPI_TalonSRX(RobotMap.frontRightCAN);
+	public WPI_TalonSRX leftFollowerMid = new WPI_TalonSRX(RobotMap.midLeftCAN);
+	public WPI_TalonSRX rightFollowerMid = new WPI_TalonSRX(RobotMap.midRightCAN);
+	public WPI_TalonSRX rightMaster = new WPI_TalonSRX(RobotMap.backRightCAN);
+	public WPI_TalonSRX leftMaster = new WPI_TalonSRX(RobotMap.backLeftCAN);
 
 	AHRS ahrs;
 	PivotTurnPID pivotTurnPID;
@@ -114,6 +106,7 @@ public class DriveTrain extends Subsystem {
 				rightMotorSpeed = -Math.max(-throttle, -turnPower);
 			}
 		}
+		//System.out.println("ArcadeDrive::setDriveSignal("+leftMotorSpeed+"::"+rightMotorSpeed+") at "+System.currentTimeMillis());
 		this.setDriveSignal(new DriveSignal(leftMotorSpeed, rightMotorSpeed));
 	}
 
@@ -160,13 +153,13 @@ public class DriveTrain extends Subsystem {
 				
 		rightFollowerBack.configOpenloopRamp(0, 0);
 		leftFollowerBack.configOpenloopRamp(0, 0);
-		rightFollowerFront.configOpenloopRamp(0, 0);
-		leftFollowerFront.configOpenloopRamp(0, 0);
+		rightFollowerMid.configOpenloopRamp(0, 0);
+		leftFollowerMid.configOpenloopRamp(0, 0);
 		
 		rightFollowerBack.set(ControlMode.Follower, rightMaster.getDeviceID());
 		leftFollowerBack.set(ControlMode.Follower, leftMaster.getDeviceID());
-		rightFollowerFront.set(ControlMode.Follower, rightMaster.getDeviceID());
-		leftFollowerFront.set(ControlMode.Follower, leftMaster.getDeviceID());
+		rightFollowerMid.set(ControlMode.Follower, rightMaster.getDeviceID());
+		leftFollowerMid.set(ControlMode.Follower, leftMaster.getDeviceID());
 		
 		setCoast();
 
@@ -210,15 +203,15 @@ public class DriveTrain extends Subsystem {
 	
 	public void DriveEncoderPIDInit(double dDistance){
 		//System.out.println("DriveMotorSubsystem.PIDInit");
-		driveEncoderPID.setSetpoint(dDistance);
-		driveEncoderPID.enable();	
+		//driveEncoderPID.setSetpoint(dDistance);
+		//driveEncoderPID.enable();	
 		 //System.out.println("Enabled = " + driveStraightPID.getPIDController().isEnabled());
 		}
 
 	public void DriveEncoderPIDStop(){
 		//System.out.println("Enabled = " + driveStraightPID.getPIDController().isEnabled());
 		//System.out.println("DriveMotorSubsystem.PIDStop");
-		driveEncoderPID.getPIDController().reset();
+		//driveEncoderPID.getPIDController().reset();
 		robotDrive.stopMotor();
 		f_magnitude = 0;
 	}
@@ -229,17 +222,19 @@ public class DriveTrain extends Subsystem {
    
 	public void DriveStraightPIDInit(double dMag, double dDeg){
 		ahrs.zeroYaw();
+		driveStraightPID.getPIDController().reset();
 		System.out.println("DriveMotorSubsystem.PIDInit");
 		f_magnitude = -dMag;
 		driveStraightPID.setSetpoint(dDeg);
 		driveStraightPID.enable();	
-		 System.out.println("Enabled = " + driveStraightPID.getPIDController().isEnabled());
+		System.out.println("Enabled = " + driveStraightPID.getPIDController().isEnabled());
 		}
 
 	public void DriveStraightPIDStop(){
 		System.out.println("Enabled = " + driveStraightPID.getPIDController().isEnabled());
 		System.out.println("DriveMotorSubsystem.PIDStop");
 		driveStraightPID.getPIDController().reset();
+		setBrake();
 		robotDrive.stopMotor();
 	}
 
@@ -274,7 +269,8 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public void DriveByAngleValues(double dMag, double dRotateMag) {
-		robotDrive.arcadeDrive(dMag, dRotateMag);
+		robotDrive.arcadeDrive(dMag, dRotateMag,false);
+		System.out.println("Magnitude = " + dMag);
 	}
 
 	public AHRS getAhrs() {
@@ -308,8 +304,8 @@ public class DriveTrain extends Subsystem {
 		
 		leftFollowerBack.setNeutralMode(NeutralMode.Brake);
 		rightFollowerBack.setNeutralMode(NeutralMode.Brake);
-		leftFollowerFront.setNeutralMode(NeutralMode.Brake);
-		rightFollowerFront.setNeutralMode(NeutralMode.Brake);
+		leftFollowerMid.setNeutralMode(NeutralMode.Brake);
+		rightFollowerMid.setNeutralMode(NeutralMode.Brake);
 	}
 
 	public void setCoast() {
@@ -318,14 +314,22 @@ public class DriveTrain extends Subsystem {
 		
 		leftFollowerBack.setNeutralMode(NeutralMode.Coast);
 		rightFollowerBack.setNeutralMode(NeutralMode.Coast);
-		leftFollowerFront.setNeutralMode(NeutralMode.Coast);
-		rightFollowerFront.setNeutralMode(NeutralMode.Coast);
+		leftFollowerMid.setNeutralMode(NeutralMode.Coast);
+		rightFollowerMid.setNeutralMode(NeutralMode.Coast);
 	}
 
 	public double getEncoderValue() {
 		return (-leftMaster.getSelectedSensorPosition(0) + rightMaster.getSelectedSensorPosition(0)) / 2;
 	}
+	
+	public double getLeftEncoderValue() {
+		return leftMaster.getSelectedSensorPosition(0);
+	}
 
+	public double getRightEncoderValue() {
+		return rightMaster.getSelectedSensorPosition(0);
+	}
+	
 	public void resetEncoders() {
 		leftMaster.setSelectedSensorPosition(0, 0, 0);
 		rightMaster.setSelectedSensorPosition(0, 0, 0);

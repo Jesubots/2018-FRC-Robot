@@ -21,7 +21,7 @@ public class PivotTurn extends Command {
 	public PivotTurn(double magnitude, double degrees, double driveTimeout) {
 		commandMagnitude = magnitude;
 		commandDegrees = degrees;
-		initFromOI = false;
+		initFromOI = true; //false;
 		commandTimeout = driveTimeout;
 
 		// Use requires() here to declare subsystem dependencies

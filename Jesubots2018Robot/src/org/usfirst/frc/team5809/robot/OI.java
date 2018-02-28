@@ -9,11 +9,11 @@ package org.usfirst.frc.team5809.robot;
 
 import org.usfirst.frc.team5809.lib.drivers.JesubotsButton;
 import org.usfirst.frc.team5809.lib.drivers.JesubotsButton.LogitechButton;
-import org.usfirst.frc.team5809.robot.RobotMap;
+//import org.usfirst.frc.team5809.robot.RobotMap;
 import org.usfirst.frc.team5809.robot.commands.jaws.SpitJaws;
 import org.usfirst.frc.team5809.robot.commands.jaws.StopJaws;
 import org.usfirst.frc.team5809.robot.commands.jaws.GrabJaws;
-import org.usfirst.frc.team5809.robot.subsystems.DriveTrain;
+//import org.usfirst.frc.team5809.robot.subsystems.DriveTrain;
 
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -31,9 +31,11 @@ public class OI {
 	public static JesubotsButton grabJawsButton = new JesubotsButton(OI.driverStick, LogitechButton.X);
 	public static JesubotsButton spitJawsButton = new JesubotsButton(OI.driverStick, LogitechButton.Y);
 
-	private static double driveTime;
+	//private static double driveTime;
 	private static double driveMag;
 	private static double pivotTurnDegree;
+	private static double driveTime;
+	private static double encoderPosition;
 
 	public static double getDriveMag() {
 		return driveMag;
@@ -54,6 +56,22 @@ public class OI {
 	public OI() {
    	 	initButtons();
     }
+	
+	public static double getEncoderPosition() {
+		return encoderPosition;
+	}
+
+	public static void setEncoderPosition(double encoderPosition) {
+		OI.encoderPosition = encoderPosition;
+	}
+	
+	public static double getDriveTime() {
+		return driveTime;
+	}
+
+	public void setDriveTime(double driveTime) {
+		OI.driveTime = driveTime;
+	}
 
 	public void initButtons() {
 		OI.grabJawsButton.whenPressed(new GrabJaws());
