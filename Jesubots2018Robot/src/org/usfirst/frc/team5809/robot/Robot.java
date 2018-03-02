@@ -50,8 +50,6 @@ public class Robot extends TimedRobot {
 		driveTrain = DriveTrain.getInstance();
 		jaws = Jaws.getInstance();
 		lift = Lift.getInstance();
-		
-		
 
 		m_chooser.addDefault("Default Auto", new ArcadeDrive());
 		m_chooser.addObject("Drive Straight Time", new DriveStraightTime());
@@ -59,13 +57,18 @@ public class Robot extends TimedRobot {
 		m_chooser.addObject("Drive Straight Encoders", new DriveStraightEncoders());
 		m_chooser.addObject("Pivot Turn", new PivotTurn());
 		SmartDashboard.putData("Auto mode", m_chooser);
+		// SmartDashboard.putNumber("Encoder Position",
+		// driveTrain.getEncoderPosition());
 		SmartDashboard.putNumber("NavX Yaw", driveTrain.getAhrs().getYaw());
 		SmartDashboard.putNumber("Drive Straight Distance", RobotMap.defaultDriveDistanceValue);
 		SmartDashboard.putNumber("Drive Straight Time", RobotMap.defaultDriveTimeValue);
 		SmartDashboard.putNumber("DriveMag", RobotMap.defaultDriveMag);
 		SmartDashboard.putNumber("Pivot Turn Degrees", RobotMap.defaultPivotTurn);
-		
-		
+		SmartDashboard.putNumber("Pivot Turn P", RobotMap.PivotTurnPIDMap.kP);
+		SmartDashboard.putNumber("Pivot Turn I", RobotMap.PivotTurnPIDMap.kI);
+		SmartDashboard.putNumber("Pivot Turn D", RobotMap.PivotTurnPIDMap.kD);
+		SmartDashboard.putNumber("Pivot Turn F", RobotMap.PivotTurnPIDMap.kF);
+
 		m_oi = new OI();
 	}
 
@@ -88,11 +91,16 @@ public class Robot extends TimedRobot {
 	public void autonomousInit() {
 		m_autonomousCommand = m_chooser.getSelected();
 		driveTrain.setSafetyOff();
+		driveTrain.resetEncoders();
 
-		m_oi.setDriveTime(SmartDashboard.getNumber("Drive Straight Time",0.0));
-		m_oi.setEncoderPosition(SmartDashboard.getNumber("Drive Straight Distance",0.0));
-		m_oi.setDriveMag(SmartDashboard.getNumber("DriveMag",0.0));
-		m_oi.setPivotTurnDegree(SmartDashboard.getNumber("Pivot Turn Degrees",0.0));
+		m_oi.setDriveTime(SmartDashboard.getNumber("Drive Straight Time", 0.0));
+		m_oi.setEncoderPosition(SmartDashboard.getNumber("Drive Straight Distance", 0.0));
+		m_oi.setDriveMag(SmartDashboard.getNumber("DriveMag", 0.0));
+		m_oi.setPivotTurnDegree(SmartDashboard.getNumber("Pivot Turn Degrees", 0.0));
+		m_oi.setPivotTurnP(SmartDashboard.getNumber("Pivot Turn P", 0.0));
+		m_oi.setPivotTurnI(SmartDashboard.getNumber("Pivot Turn I", 0.0));
+		m_oi.setPivotTurnD(SmartDashboard.getNumber("Pivot Turn D", 0.0));
+		m_oi.setPivotTurnF(SmartDashboard.getNumber("Pivot Turn F", 0.0));
 
 		// schedule the autonomous command (example)
 		if (m_autonomousCommand != null) {
@@ -110,12 +118,9 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void teleopInit() {
-		// This makes sure that the autonomous stops running when
-		// teleop starts running. If you want the autonomous to
-		// continue until interrupted by another command, remove
-		// this line or comment it out.
 		driveTrain.setSafetyOff();
-		
+		driveTrain.resetEncoders();
+
 		if (m_autonomousCommand != null) {
 			m_autonomousCommand.cancel();
 		}
@@ -127,6 +132,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
+		putLiveData();
 	}
 
 	/**
@@ -134,5 +140,11 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
+	}
+
+	public void putLiveData() {
+		SmartDashboard.putNumber("Encoder Position", driveTrain.getEncoderPosition());
+		SmartDashboard.putNumber("Right Encoder Position", driveTrain.getRightEncoderPosition());
+		SmartDashboard.putNumber("Left Position", driveTrain.getLeftEncoderPosition());
 	}
 }

@@ -7,8 +7,6 @@
 
 package org.usfirst.frc.team5809.robot;
 
-
-
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
  * to a variable name. This provides flexibility changing wiring, makes checking
@@ -25,8 +23,7 @@ public class RobotMap {
 	// number and the module. For example you with a rangefinder:
 	// public static int rangefinderPort = 1;
 	// public static int rangefinderModule = 1;
-	
-	
+
 	public static final double deadBand = .3;
 
 	public static int frontLeftCAN = 5;
@@ -40,9 +37,9 @@ public class RobotMap {
 	public static double openJawsTimeout = 3.0;
 	public static double closeJawsTimeout = 3.0;
 	public static double stopJawsTimeout = .01;
-	public static double defaultGrabJawsPower = .75;
-	public static double defaultSpitJawsPower = 1.0;
-	
+	public static double defaultGrabJawsPower = .5;
+	public static double defaultSpitJawsPower = .75;
+
 	public static int leftLiftCAN = 0;
 	public static int rightLiftCAN = 1;
 	public static double defaultLiftPower = .5;
@@ -50,28 +47,35 @@ public class RobotMap {
 	public static double minMotorPower = 0.0;
 	public static double tolerancePercent = 2;
 
-	public static int liftEncoder = 0;
-	public static int leftEncoder = 0;
-	public static int rightEncoder = 0;
-	
 	public static double defaultDriveMag = 0.5;
 	public static double defaultDriveDistanceValue = 0;
 	public static double defaultDriveTimeValue = 0;
 	public static double defaultPivotTurn = 90.0;
 
+	public static double gearRatio = 1.8125;
+
 	public class PivotTurnPIDMap {
-		public static final double kP = 0.026;
+		public static final double kP = 0.028;
+		public static final double kI = 0.0;
+		public static final double kD = 0.52;
+		public static final double kF = 0.0;
+		public static final double kToleranceDegrees = 1.0f;
+
+	}
+
+	public class DriveStraightPIDMap {
+		public static final double kP = 0.023;
 		public static final double kI = 0.0026;
-		public static final double kD = 0.13;
+		public static final double kD = 0.25;
 		public static final double kF = 0.1;
 		public static final double kToleranceDegrees = 1.0f;
 	}
-	
-	public class DriveStraightPIDMap {
-		public static final double kP = 0.026;
-		public static final double kI = 0.0026;
-		public static final double kD = 0.13;
-		public static final double kF = 0.1;
+
+	public class DriveEncoderPIDMap { // .028, .0025, .15, .1
+		public static final double kP = 0.000042; // 0.0000468
+		public static final double kI = 0.00000016; // 0.00000468
+		public static final double kD = 0.00015; // 0.000234
+		public static final double kF = 0.0;
 		public static final double kToleranceDegrees = 1.0f;
 	}
 }

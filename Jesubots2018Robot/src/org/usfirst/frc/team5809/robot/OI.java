@@ -22,20 +22,27 @@ import edu.wpi.first.wpilibj.Joystick;
  * interface to the commands and command groups that allow control of the robot.
  */
 public class OI {
+
 	
 	public static OI instance;
 
 	public static final Joystick driverStick = new Joystick(0);
-	//public static final Joystick operatorStick = new Joystick(1);
-	
+	// public static final Joystick operatorStick = new Joystick(1);
+
 	public static JesubotsButton grabJawsButton = new JesubotsButton(OI.driverStick, LogitechButton.X);
 	public static JesubotsButton spitJawsButton = new JesubotsButton(OI.driverStick, LogitechButton.Y);
 
-	//private static double driveTime;
+	// private static double driveTime;
 	private static double driveMag;
 	private static double pivotTurnDegree;
 	private static double driveTime;
 	private static double encoderPosition;
+
+	public static double kP = 0.026;
+	public static double kI = 0.0026;
+	public static double kD = 0.13;
+	public static double kF = 0.1;
+	public static double kToleranceDegrees = 1.0f;
 
 	public static double getDriveMag() {
 		return driveMag;
@@ -52,11 +59,11 @@ public class OI {
 	public static void setPivotTurnDegree(double pivotTurnDegree) {
 		OI.pivotTurnDegree = pivotTurnDegree;
 	}
-	
+
 	public OI() {
-   	 	initButtons();
-    }
-	
+		initButtons();
+	}
+
 	public static double getEncoderPosition() {
 		return encoderPosition;
 	}
@@ -64,7 +71,7 @@ public class OI {
 	public static void setEncoderPosition(double encoderPosition) {
 		OI.encoderPosition = encoderPosition;
 	}
-	
+
 	public static double getDriveTime() {
 		return driveTime;
 	}
@@ -73,10 +80,26 @@ public class OI {
 		OI.driveTime = driveTime;
 	}
 
+	public void setPivotTurnP(double newP) {
+		OI.kP = newP;
+	}
+
+	public void setPivotTurnI(double newI) {
+		OI.kI = newI;
+	}
+
+	public void setPivotTurnD(double newD) {
+		OI.kD = newD;
+	}
+
+	public void setPivotTurnF(double newF) {
+		OI.kF = newF;
+	}
+
 	public void initButtons() {
 		OI.grabJawsButton.whenPressed(new GrabJaws());
 		OI.spitJawsButton.whenPressed(new SpitJaws());
-		
+
 		OI.grabJawsButton.whenReleased(new StopJaws());
 		OI.spitJawsButton.whenReleased(new StopJaws());
 	}

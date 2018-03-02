@@ -10,36 +10,36 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class DriveStraightTime extends Command {
 
-    public DriveStraightTime() {
-        // Use requires() here to declare subsystem dependencies
-    	requires(Robot.driveTrain);
-    }
+	public DriveStraightTime() {
+		// Use requires() here to declare subsystem dependencies
+		requires(Robot.driveTrain);
+	}
 
-    // Called just before this Command runs the first time
-    protected void initialize() {
-    	setInterruptible(true);
-    	System.out.println("Driving Straight");
-    	Robot.driveTrain.DriveStraightPIDInit(OI.getDriveMag(), 0.0);
-    	setTimeout(OI.getDriveTime());
-    }
+	// Called just before this Command runs the first time
+	protected void initialize() {
+		setInterruptible(true);
+		System.out.println("Driving Straight");
+		Robot.driveTrain.DriveStraightPIDInit(OI.getDriveMag(), 0.0);
+		setTimeout(OI.getDriveTime());
+	}
 
-    // Called repeatedly when this Command is scheduled to run
-    protected void execute() {
-    }
+	// Called repeatedly when this Command is scheduled to run
+	protected void execute() {
+	}
 
-    // Make this return true when this Command no longer needs to run execute()
-    protected boolean isFinished() {
-    	return isTimedOut();
-    }
+	// Make this return true when this Command no longer needs to run execute()
+	protected boolean isFinished() {
+		return isTimedOut();
+	}
 
-    // Called once after isFinished returns true
-    protected void end() {
-    	Robot.driveTrain.DriveStraightPIDStop();
-    }
+	// Called once after isFinished returns true
+	protected void end() {
+		Robot.driveTrain.DriveStraightPIDStop();
+	}
 
-    // Called when another command which requires one or more of the same
-    // subsystems is scheduled to run
-    protected void interrupted() {
-    	Robot.driveTrain.DriveStraightPIDStop();
-    }
+	// Called when another command which requires one or more of the same
+	// subsystems is scheduled to run
+	protected void interrupted() {
+		Robot.driveTrain.DriveStraightPIDStop();
+	}
 }

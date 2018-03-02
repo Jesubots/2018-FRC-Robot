@@ -22,14 +22,14 @@ public class Jaws extends Subsystem {
 		return instance;
 
 	}
-	
+
 	public VictorSP jawDrive = new VictorSP(RobotMap.jawCAN);
 
-	public Jaws () {
+	public Jaws() {
 		jawDrive.set(0.0);
 		jawDrive.setSafetyEnabled(false);
 	}
-	
+
 	public void initDefaultCommand() {
 		jawDrive.setSafetyEnabled(false);
 	}
@@ -41,7 +41,7 @@ public class Jaws extends Subsystem {
 	public void spitJaws(double jawSpeed) {
 		jawDrive.set(jawSpeed);
 	}
-	
+
 	public void stopJaws() {
 		jawDrive.set(0);
 	}

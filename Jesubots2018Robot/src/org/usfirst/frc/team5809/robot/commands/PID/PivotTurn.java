@@ -21,7 +21,7 @@ public class PivotTurn extends Command {
 	public PivotTurn(double magnitude, double degrees, double driveTimeout) {
 		commandMagnitude = magnitude;
 		commandDegrees = degrees;
-		initFromOI = true; //false;
+		initFromOI = true; // false;
 		commandTimeout = driveTimeout;
 
 		// Use requires() here to declare subsystem dependencies
@@ -39,7 +39,7 @@ public class PivotTurn extends Command {
 			commandDegrees = OI.getPivotTurnDegree();
 		}
 
-		Robot.driveTrain.pivotTurnPIDInit(commandMagnitude, commandDegrees);
+		Robot.driveTrain.PivotTurnPIDInit(commandMagnitude, commandDegrees);
 	}
 
 	// Called repeatedly when this Command is scheduled to run
@@ -48,19 +48,19 @@ public class PivotTurn extends Command {
 
 	// Make this return true when this Command no longer needs to run execute()
 	protected boolean isFinished() {
-		return (Robot.driveTrain.pivotTurnIsFinished()) || isTimedOut();
+		return (Robot.driveTrain.PivotTurnIsFinished()) || isTimedOut();
 	}
 
 	// Called once after isFinished returns true
 	protected void end() {
-		Robot.driveTrain.pivotTurnPIDStop();
+		Robot.driveTrain.PivotTurnPIDStop();
 		Robot.driveTrain.setCoast();
 	}
 
 	// Called when another command which requires one or more of the same
 	// subsystems is scheduled to run
 	protected void interrupted() {
-		Robot.driveTrain.pivotTurnPIDStop();
+		Robot.driveTrain.PivotTurnPIDStop();
 		Robot.driveTrain.setCoast();
 	}
 }

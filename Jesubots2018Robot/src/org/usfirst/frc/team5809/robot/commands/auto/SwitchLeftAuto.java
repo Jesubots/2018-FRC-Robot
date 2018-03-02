@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
  */
 public class SwitchLeftAuto extends CommandGroup {
 
-    public SwitchLeftAuto() {
-        //addSequential(new DriveStraightDistance());
-    }
+	public SwitchLeftAuto() {
+		// addSequential(new DriveStraightDistance());
+	}
 }
