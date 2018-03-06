@@ -39,7 +39,7 @@ public class DriveStraightPID extends PIDSubsystem {
 	 * output; }
 	 */
 	protected double returnPIDInput() {
-		System.out.println("DriveStraightPID.returnPIDInput.Navx Angle" + Robot.driveTrain.ahrs.getYaw());
+		//System.out.println("DriveStraightPID.returnPIDInput.Navx Angle" + Robot.driveTrain.ahrs.getYaw());
 		return Robot.driveTrain.ahrs.getYaw();
 	}
 

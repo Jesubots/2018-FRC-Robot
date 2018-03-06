@@ -53,6 +53,11 @@ public class RobotMap {
 	public static double defaultPivotTurn = 90.0;
 
 	public static double gearRatio = 1.8125;
+	public static double rotationConstant = 4096.0;
+
+	public static double defaultEncoderDistance = 0.0;
+
+	public static int defaultAutoSide = 1;
 
 	public class PivotTurnPIDMap {
 		public static final double kP = 0.028;

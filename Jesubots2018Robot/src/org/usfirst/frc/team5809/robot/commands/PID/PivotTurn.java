@@ -18,10 +18,10 @@ public class PivotTurn extends Command {
 		requires(Robot.driveTrain);
 	}
 
-	public PivotTurn(double magnitude, double degrees, double driveTimeout) {
+	public PivotTurn(double magnitude, double degrees, double driveTimeout, boolean getFromOI) {
 		commandMagnitude = magnitude;
 		commandDegrees = degrees;
-		initFromOI = true; // false;
+		initFromOI = getFromOI; // false;
 		commandTimeout = driveTimeout;
 
 		// Use requires() here to declare subsystem dependencies

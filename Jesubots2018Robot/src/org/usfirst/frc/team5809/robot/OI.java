@@ -12,10 +12,16 @@ import org.usfirst.frc.team5809.lib.drivers.JesubotsButton.LogitechButton;
 //import org.usfirst.frc.team5809.robot.RobotMap;
 import org.usfirst.frc.team5809.robot.commands.jaws.SpitJaws;
 import org.usfirst.frc.team5809.robot.commands.jaws.StopJaws;
+import org.usfirst.frc.team5809.robot.Destination.eFieldDistance;
+import org.usfirst.frc.team5809.robot.commands.auto.DestinationAuto;
 import org.usfirst.frc.team5809.robot.commands.jaws.GrabJaws;
 //import org.usfirst.frc.team5809.robot.subsystems.DriveTrain;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Sendable;
+import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -23,7 +29,6 @@ import edu.wpi.first.wpilibj.Joystick;
  */
 public class OI {
 
-	
 	public static OI instance;
 
 	public static final Joystick driverStick = new Joystick(0);
@@ -37,12 +42,9 @@ public class OI {
 	private static double pivotTurnDegree;
 	private static double driveTime;
 	private static double encoderPosition;
-
-	public static double kP = 0.026;
-	public static double kI = 0.0026;
-	public static double kD = 0.13;
-	public static double kF = 0.1;
-	public static double kToleranceDegrees = 1.0f;
+	private static double side;
+	private static Destination destination;
+	private static Command autoCommand;
 
 	public static double getDriveMag() {
 		return driveMag;
@@ -69,7 +71,7 @@ public class OI {
 	}
 
 	public static void setEncoderPosition(double encoderPosition) {
-		OI.encoderPosition = encoderPosition;
+		OI.encoderPosition = encoderPosition * RobotMap.rotationConstant;
 	}
 
 	public static double getDriveTime() {
@@ -80,20 +82,89 @@ public class OI {
 		OI.driveTime = driveTime;
 	}
 
-	public void setPivotTurnP(double newP) {
-		OI.kP = newP;
+	public static Destination nearSwitch;
+	public static Destination scale;
+	public static Destination farSwitch;
+	public static Destination defaultSwitch;
+	
+	public static void setGameAutoProposed() {
+		String gameData;
+		gameData = OI.getGameState();
+
+		if (gameData.length() > 0) {
+			
+			nearSwitch = new Destination (gameData.charAt(0), Destination.eFieldDistance.kNear);
+			scale = new Destination (gameData.charAt(1), Destination.eFieldDistance.kMiddle);
+			farSwitch = new Destination (gameData.charAt(2), Destination.eFieldDistance.kFar);
+			defaultSwitch = new Destination ();
+			
+		} else {
+			// what if gameData does not exist? = default destinations to unknown
+			nearSwitch = new Destination ();
+			scale = new Destination ();
+			farSwitch = new Destination ();
+		}
+	}
+	
+	
+	public static void setAutoInfo(double side) {
+		Destination switchDest = OI.nearSwitch;
+		Destination scaleDest = OI.scale;
+		Destination defaultDest = OI.defaultSwitch;
+		double left = 2.0;
+		double right = 1.0;
+		double middle = 0.0;
+		
+		
+		if(side == left){	//left
+			if(switchDest.getFieldSide() == Destination.eFieldSide.kLeft){
+				setDestination(switchDest);
+			} else if(scaleDest.getFieldSide() == Destination.eFieldSide.kLeft){
+				setDestination(scaleDest);
+			} else {
+				setDestination(defaultDest);
+			}
+		} else if(side == right){	//right
+			if(switchDest.getFieldSide() == Destination.eFieldSide.kRight){
+				setDestination(switchDest);
+			} else if(scaleDest.getFieldSide() == Destination.eFieldSide.kRight){
+				setDestination(scaleDest);
+			} else {
+				setDestination(defaultDest);
+			}
+		} else if(side == middle){
+			setDestination(defaultDest);
+		} else {
+			setDestination(defaultDest);
+		}
+				 
+	}
+	
+	public static void setDestination(Destination destination){
+		OI.destination = destination;
+	}
+	
+	public static Destination getDestination(){
+		return OI.destination;
+	}
+	
+
+	public static Command getGameAuto() {
+		return OI.autoCommand;
+	}
+	
+	public static void setSide(double side) {
+		OI.side = side;
+	}
+	
+	public static double getSide(){
+		return OI.side;
 	}
 
-	public void setPivotTurnI(double newI) {
-		OI.kI = newI;
-	}
-
-	public void setPivotTurnD(double newD) {
-		OI.kD = newD;
-	}
-
-	public void setPivotTurnF(double newF) {
-		OI.kF = newF;
+	public static String getGameState() {
+		String gameData;
+		gameData = DriverStation.getInstance().getGameSpecificMessage();
+		return gameData;
 	}
 
 	public void initButtons() {
@@ -104,3 +175,40 @@ public class OI {
 		OI.spitJawsButton.whenReleased(new StopJaws());
 	}
 }
+
+/*
+ * public static void setGameAuto() {
+		String gameData;
+		gameData = OI.getGameState();
+
+		if (gameData.length() > 0) {
+			if (gameData.charAt(0) == 'L') {
+				if (gameData.charAt(1) == 'L') {
+					if (gameData.charAt(2) == 'L') {
+						// LLL
+						OI.autoCommand = new SwitchLeftAuto();
+					}
+				} else {
+					if (gameData.charAt(2) == 'L') {
+						// LRL
+						OI.autoCommand = new SwitchLeftAuto();
+					}
+				}
+			} else {
+				if (gameData.charAt(1) == 'L') {
+					if (gameData.charAt(2) == 'L') {
+						// RLR
+						OI.autoCommand = new SwitchRightAuto();
+					}
+				} else {
+					if (gameData.charAt(2) == 'L') {
+						// RRR
+						OI.autoCommand = new SwitchRightAuto();
+					}
+				}
+			}
+		} else {
+			// what if gameData does not exist?
+		}
+	}
+	*/

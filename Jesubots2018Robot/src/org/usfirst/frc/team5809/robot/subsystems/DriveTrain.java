@@ -143,90 +143,47 @@ public class DriveTrain extends Subsystem {
 		rightMaster.set(signal.rightMotor);
 	}
 
-	public void arcadeDrive(double throttle, double turnPower, double deadband, boolean squaredInputs) {
+	public void arcadeDrive(double throttle, double turnPower) {
 		double leftMotorSpeed;
 		double rightMotorSpeed;
-
-		throttle = OI.driverStick.getY();//ArcadeDrive.limit(throttle, 1, -1);
-		turnPower = -OI.driverStick.getZ();//ArcadeDrive.limit(turnPower, 1, -1);
+		double stickThreshold = 0.01;
+		double powerThreshold = 1.0;
+		turnPower = -turnPower;
 		
 		leftMotorSpeed = throttle;
 		rightMotorSpeed = throttle;
 		
 		
-		if(turnPower < -0.01){
+		if(turnPower < -stickThreshold){
 			leftMotorSpeed += turnPower;
-			if(throttle > -0.01 && throttle < 0.01){
+			if(Math.abs(throttle) < stickThreshold){
 				rightMotorSpeed -= turnPower;
 			}
 		} else
-		if(turnPower > 0.01){
+		if(turnPower > stickThreshold){
 			rightMotorSpeed -= turnPower;
-			if(throttle > -0.01 && throttle < 0.01){
+			if(Math.abs(throttle) < stickThreshold){
 				leftMotorSpeed += turnPower;
 			}
 		} else
-		if(turnPower > -0.01 && turnPower < 0.01){
+		if(Math.abs(turnPower) < stickThreshold){
 			
 		}
 		
+		if(leftMotorSpeed > powerThreshold){
+			leftMotorSpeed = powerThreshold;
+		} else
+		if(leftMotorSpeed < -powerThreshold){
+			leftMotorSpeed = -powerThreshold;
+		}
 		
-
-		/*
-		if (Math.abs(throttle) < deadband) {
-			throttle = 0;
-		} else if (throttle < 0) {
-			throttle = (throttle + deadband) / (1 - deadband);
-		} else {
-			throttle = (throttle - deadband) / (1 - deadband);
+		if(rightMotorSpeed > powerThreshold){
+			rightMotorSpeed = powerThreshold;
+		} else
+		if(rightMotorSpeed < -powerThreshold){
+			rightMotorSpeed = -powerThreshold;
 		}
 
-		if (Math.abs(turnPower) < deadband) {
-			turnPower = 0;
-		}
-		/*
-		 * } else if (turnPower < 0){ turnPower = (turnPower + deadband) /
-		 * (1-deadband); } else { turnPower = (turnPower - deadband) /
-		 * (1-deadband); }
-		 */
-		/*
-		if (squaredInputs) {
-			// square the inputs (while preserving the sign) to increase fine
-			// control
-			// while permitting full power
-			/*
-			 * if (throttle >= 0.0) { throttle = (throttle * throttle); } else {
-			 * throttle = -(throttle * throttle); }
-			 *//*
-			if (turnPower >= 0.0) {
-				turnPower = (turnPower * turnPower);
-			} else {
-				turnPower = -(turnPower * turnPower);
-			}
-		}
-
-		// Positive Turn Power turns left
-		if (throttle > 0.0) {
-			if (turnPower > 0.0) {
-				leftMotorSpeed = throttle - turnPower;
-				rightMotorSpeed = Math.max(throttle, turnPower);
-			} else {
-				leftMotorSpeed = Math.max(throttle, -turnPower);
-				rightMotorSpeed = throttle + turnPower;
-			}
-		} else {
-			if (turnPower > 0.0) {
-				leftMotorSpeed = -Math.max(-throttle, turnPower);
-				rightMotorSpeed = throttle + turnPower;
-			} else {
-				leftMotorSpeed = throttle - turnPower;
-				rightMotorSpeed = -Math.max(-throttle, -turnPower);
-			}
-		}
-		*/
-		// System.out.println("ArcadeDrive::setDriveSignal("+leftMotorSpeed+"::"+rightMotorSpeed+")
-		// at "+System.currentTimeMillis());
-		
 		robotDrive.tankDrive(leftMotorSpeed, rightMotorSpeed);
 		
 		// this.setDriveSignal(new DriveSignal(leftMotorSpeed,
@@ -359,15 +316,15 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public double getEncoderPosition() {
-		return (leftFollowerMid.getSelectedSensorPosition(0) + rightMaster.getSelectedSensorPosition(0)) / 2;
+		return ((leftFollowerMid.getSelectedSensorPosition(0) + rightMaster.getSelectedSensorPosition(0)) / 2) / RobotMap.gearRatio;
 	}
 
 	public double getLeftEncoderPosition() {
-		return leftFollowerMid.getSelectedSensorPosition(0);
+		return leftFollowerMid.getSelectedSensorPosition(0) / RobotMap.gearRatio;
 	}
 
 	public double getRightEncoderPosition() {
-		return rightMaster.getSelectedSensorPosition(0);
+		return rightMaster.getSelectedSensorPosition(0) / RobotMap.gearRatio;
 	}
 
 	public void resetEncoders() {
