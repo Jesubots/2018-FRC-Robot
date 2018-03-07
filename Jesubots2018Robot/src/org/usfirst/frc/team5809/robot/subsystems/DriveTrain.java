@@ -2,7 +2,6 @@ package org.usfirst.frc.team5809.robot.subsystems;
 
 import org.usfirst.frc.team5809.robot.commands.*;
 import org.usfirst.frc.team5809.robot.subsystems.PivotTurnPID;
-import org.usfirst.frc.team5809.robot.OI;
 import org.usfirst.frc.team5809.robot.RobotMap;
 import org.usfirst.frc.team5809.lib.drivers.DriveSignal;
 

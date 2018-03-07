@@ -10,13 +10,16 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class LowerLift extends Command {
 
-	public LowerLift() {
+	private double timeout = 0.0;
+	public LowerLift(double time) {
 		requires(Robot.lift);
+		timeout = time;
 	}
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
 		Robot.lift.liftDown(RobotMap.defaultLiftPower);
+		setTimeout(timeout);
 	}
 
 	// Called repeatedly when this Command is scheduled to run
@@ -25,7 +28,7 @@ public class LowerLift extends Command {
 
 	// Make this return true when this Command no longer needs to run execute()
 	protected boolean isFinished() {
-		return false;
+		return isTimedOut();
 	}
 
 	// Called once after isFinished returns true

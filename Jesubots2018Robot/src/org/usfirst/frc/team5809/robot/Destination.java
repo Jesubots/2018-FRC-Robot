@@ -2,20 +2,65 @@ package org.usfirst.frc.team5809.robot;
 
 public class Destination {
 
-	public enum eFieldSide {
-		kLeft, kRight, kUnknown
+	public static enum eFieldSide {
+		kLeft, kRight, kMiddle, kUnknown
 	};
 
-	public enum eFieldDistance {
-		kNear, kMiddle, kFar, kUnknown
+	public static enum eFieldDistance {
+		kNearSide, kNear, kMiddle, kFar, kUnknown, 
 	};
 
 	// it may proper to define this in RobotMap
-	public class EncoderDistanceMap {
+	public static class EncoderDistanceMap {
 		public static final double kUnknownDistance = 0.0;
-		public static final double kNearDistance = 10000.0;
-		public static final double kMiddleDistance = 20000.0;
+		public static final double kNearDistance = 101034.0;
+		public static final double kMiddleDistance = 207530.0;
 		public static final double kFarDistance = 30000.0;
+		public static final double kNearSide = 27306.0;
+		public static final double kNearSideSeg1 = 27306.0;
+		public static final double kNearSideSeg2 = 27306.0 - 47786.0 ;  //	public static double autoDistanceDifference = 47786.0;
+		public static final double kNearSideSeg3 = 2.0 * 27306.0;
+	}	
+	
+	public static enum NearSideDestination  {
+		DRIVE_SEG1 {
+			@Override
+			public double getDriveData() {
+				return EncoderDistanceMap.kNearSideSeg1;
+			}
+		},
+		DRIVE_TURN1 {
+			@Override
+			public double getDriveData() {
+				if (OI.getDestination().getFieldSide() ==  Destination.eFieldSide.kLeft)
+					return 90.0;  //turn left
+				else
+					return -90.0;  // turn right
+			}
+		},
+		DRIVE_SEG2 {
+			@Override
+			public double getDriveData() {
+				return EncoderDistanceMap.kNearSideSeg2;
+			}
+		},
+		DRIVE_TURN2 {
+			@Override
+			public double getDriveData() {
+				if (OI.getDestination().getFieldSide() ==  Destination.eFieldSide.kLeft)
+					return -90.0;  // turn right
+				else
+					return 90.0;   // turn left
+			}
+		},
+		DRIVE_SEG3 {
+			@Override
+			public double getDriveData() {
+				return EncoderDistanceMap.kNearSideSeg3;
+			}
+		};
+
+		public abstract double getDriveData();
 	}
 
 	private eFieldSide fieldSide;
@@ -78,8 +123,48 @@ public class Destination {
 			return EncoderDistanceMap.kMiddleDistance;
 		case kFar:
 			return EncoderDistanceMap.kFarDistance;
+		case kNearSide:
+			return EncoderDistanceMap.kNearSide;
 		default:
 			return EncoderDistanceMap.kUnknownDistance;
 		}
+	}
+
+	public String toString() {
+		String sRet;
+
+		switch (this.fieldSide) {
+		case kLeft: // desination is on Left, so turn Right
+			sRet = "kLeft, ";
+			break;
+		case kRight: // destination is on right, so turn Left
+			sRet = "kRight, ";
+			break;
+		case kMiddle: // destination is on right, so turn Left
+			sRet = "kMiddle, ";
+			break;
+		default:
+			sRet = "kUnknown, ";
+			break;
+		}
+
+		switch (this.fieldDistance) {
+		case kNearSide:
+			sRet = sRet + "kNearSide";
+			break;
+		case kNear:
+			sRet = sRet + "kNear";
+			break;
+		case kMiddle:
+			sRet = sRet + "kMiddle";
+			break;
+		case kFar:
+			sRet = sRet + "kFar";
+			break;
+		default:
+			sRet = sRet + "kUnknown";
+		}
+
+		return sRet;
 	}
 }

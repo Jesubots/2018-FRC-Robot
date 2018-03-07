@@ -7,6 +7,9 @@
 
 package org.usfirst.frc.team5809.robot;
 
+import java.util.Arrays;
+
+
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
  * to a variable name. This provides flexibility changing wiring, makes checking
@@ -40,6 +43,7 @@ public class RobotMap {
 	public static double defaultGrabJawsPower = .5;
 	public static double defaultSpitJawsPower = .75;
 
+	public static double defaultLiftTimeout = 5.0;
 	public static int leftLiftCAN = 0;
 	public static int rightLiftCAN = 1;
 	public static double defaultLiftPower = .5;
@@ -56,8 +60,9 @@ public class RobotMap {
 	public static double rotationConstant = 4096.0;
 
 	public static double defaultEncoderDistance = 0.0;
-
+	
 	public static int defaultAutoSide = 1;
+	public static double autoDistanceDifference = 47786.0;
 
 	public class PivotTurnPIDMap {
 		public static final double kP = 0.028;
@@ -82,5 +87,15 @@ public class RobotMap {
 		public static final double kD = 0.00015; // 0.000234
 		public static final double kF = 0.0;
 		public static final double kToleranceDegrees = 1.0f;
+	}
+
+	public enum StartPosition {
+		LEFT, MIDDLE, RIGHT;
+
+		public static String[] names() {
+			String valueStr = Arrays.toString(StartPosition.values());
+			return valueStr.substring(1, valueStr.length()-1).replace(" ","").split(",");
+			
+		}
 	}
 }

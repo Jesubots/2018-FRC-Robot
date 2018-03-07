@@ -7,6 +7,7 @@
 
 package org.usfirst.frc.team5809.robot;
 
+import org.usfirst.frc.team5809.robot.RobotMap.StartPosition;
 import org.usfirst.frc.team5809.robot.commands.PID.DriveStraightDistance;
 import org.usfirst.frc.team5809.robot.commands.PID.DriveStraightEncoders;
 import org.usfirst.frc.team5809.robot.commands.PID.DriveStraightTime;
@@ -15,6 +16,7 @@ import org.usfirst.frc.team5809.robot.commands.auto.DestinationAuto;
 import org.usfirst.frc.team5809.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team5809.robot.subsystems.Jaws;
 import org.usfirst.frc.team5809.robot.subsystems.Lift;
+import org.usfirst.frc.team5809.robot.subsystems.Pneumatics;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -34,12 +36,15 @@ public class Robot extends TimedRobot {
 	public static volatile DriveTrain driveTrain = null;
 	public static volatile Jaws jaws = null;
 	public static volatile Lift lift = null;
+	public static volatile Pneumatics pneumatics = null;
 
 	// public static final driveTrain kDriveTrain = new DriveTrain();
 	public static OI m_oi = null;
+	
 
 	Command m_autonomousCommand;
 	SendableChooser<Command> m_chooser = new SendableChooser<>();
+	SendableChooser<String> m_position_chooser = new SendableChooser<>();
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -50,12 +55,34 @@ public class Robot extends TimedRobot {
 		driveTrain = DriveTrain.getInstance();
 		jaws = Jaws.getInstance();
 		lift = Lift.getInstance();
-		OI.setGameAutoProposed();
-		OI.setSide(1);
-		OI.setAutoInfo(OI.getSide());
+		pneumatics = Pneumatics.getInstance();
+		// OI.setSide(1);
+		// OI.setAutoInfo(OI.getSide());
+
+		/*
+		 * m_position_chooser.addDefault("Left",StartPosition.names()[
+		 * StartPosition.LEFT.ordinal()]);
+		 * m_position_chooser.addObject("Middle",StartPosition.names()[
+		 * StartPosition.MIDDLE.ordinal()]);
+		 * m_position_chooser.addObject("Right",StartPosition.names()[
+		 * StartPosition.RIGHT.ordinal()]);
+		 */
+		int index = 0;
+		for (String s : StartPosition.names()) {
+			String display = Character.toUpperCase(s.charAt(0)) + s.substring(1).toLowerCase();
+
+			if (index++ == 0) {
+				m_position_chooser.addDefault(display, s);
+
+			} else {
+				m_position_chooser.addObject(display, s);
+			}
+
+		}
+		SmartDashboard.putData("Robot Start Position", m_position_chooser);
 
 		m_chooser.addDefault("Default Auto", new DriveStraightTime());
-		//m_chooser.addObject("Drive Straight Time", new DriveStraightTime());
+		// m_chooser.addObject("Drive Straight Time", new DriveStraightTime());
 		m_chooser.addObject("Drive Straight Distance", new DriveStraightDistance());
 		m_chooser.addObject("Drive Straight Encoders", new DriveStraightEncoders());
 		m_chooser.addObject("Pivot Turn", new PivotTurn());
@@ -91,16 +118,23 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousInit() {
 		m_autonomousCommand = m_chooser.getSelected();
-		m_oi.setSide(SmartDashboard.getNumber("Side", 0.0));
-		m_oi.setAutoInfo(m_oi.getSide());
-		
+		OI.setSide(SmartDashboard.getNumber("Side", 0.0));
+
+		// m_oi.setAutoInfo(m_oi.getSide());
+		OI.setAutoInfo(m_position_chooser.getSelected());
+
+		System.out.println("Selected auto command = " + m_autonomousCommand.toString());
+		if (m_autonomousCommand.toString().contentEquals("DestinationAuto")) {
+			m_autonomousCommand = new DestinationAuto();
+		}
+
 		driveTrain.setSafetyOff();
 		driveTrain.resetEncoders();
 
-		m_oi.setDriveTime(SmartDashboard.getNumber("Drive Straight Time", 0.0));
-		m_oi.setEncoderPosition(SmartDashboard.getNumber("Drive Straight Distance", 0.0));
-		m_oi.setDriveMag(SmartDashboard.getNumber("DriveMag", 0.0));
-		m_oi.setPivotTurnDegree(SmartDashboard.getNumber("Pivot Turn Degrees", 0.0));
+		OI.setDriveTime(SmartDashboard.getNumber("Drive Straight Time", 0.0));
+		OI.setEncoderPosition(SmartDashboard.getNumber("Drive Straight Distance", 0.0));
+		OI.setDriveMag(SmartDashboard.getNumber("DriveMag", 0.0));
+		OI.setPivotTurnDegree(SmartDashboard.getNumber("Pivot Turn Degrees", 0.0));
 
 		// schedule the autonomous command (example)
 		if (m_autonomousCommand != null) {
@@ -108,7 +142,7 @@ public class Robot extends TimedRobot {
 		}
 	}
 
-	/**
+	/*
 	 * This function is called periodically during autonomous.
 	 */
 	@Override

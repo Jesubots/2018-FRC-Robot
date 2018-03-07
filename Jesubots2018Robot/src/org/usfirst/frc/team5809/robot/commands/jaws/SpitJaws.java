@@ -12,11 +12,13 @@ public class SpitJaws extends Command {
 
 	public SpitJaws() {
 		requires(Robot.jaws);
+		requires(Robot.pneumatics);
 	}
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
-
+		Robot.pneumatics.openLeftJaw();
+		Robot.pneumatics.openRightJaw();
 		Robot.jaws.spitJaws(RobotMap.defaultSpitJawsPower);
 		setTimeout(RobotMap.closeJawsTimeout);
 
