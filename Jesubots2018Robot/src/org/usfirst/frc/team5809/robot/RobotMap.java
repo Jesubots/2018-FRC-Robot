@@ -63,6 +63,10 @@ public class RobotMap {
 	
 	public static int defaultAutoSide = 1;
 	public static double autoDistanceDifference = 47786.0;
+	
+	public static enum eLiftDistance {
+			kHigh, kLow, kUnknown
+	};
 
 	public class PivotTurnPIDMap {
 		public static final double kP = 0.028;
@@ -87,6 +91,23 @@ public class RobotMap {
 		public static final double kD = 0.00015; // 0.000234
 		public static final double kF = 0.0;
 		public static final double kToleranceDegrees = 1.0f;
+	}
+	
+	public static class EncoderDistanceMap {
+		public static final double kUnknownDistance = 0.0;
+		public static final double kNearDistance = 101034.0;
+		public static final double kMiddleDistance = 207530.0;
+		public static final double kFarDistance = 30000.0;
+		public static final double kNearSide = 27306.0;
+		public static final double kNearSideSeg1 = 27306.0;
+		public static final double kNearSideSeg2 = 27306.0 - 47786.0 ;  //	public static double autoDistanceDifference = 47786.0;
+		public static final double kNearSideSeg3 = 2.0 * 27306.0;
+	}
+	
+	public static class LiftHeightMap {
+		public static final double kHighDistance = 8000.0;
+		public static final double kLowDistance = 4000.0;
+		public static final double kUnknownDistance = 0.0;
 	}
 
 	public enum StartPosition {

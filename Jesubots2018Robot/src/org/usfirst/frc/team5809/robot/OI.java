@@ -12,10 +12,10 @@ import org.usfirst.frc.team5809.lib.drivers.JesubotsButton.LogitechButton;
 import org.usfirst.frc.team5809.robot.commands.jaws.SpitJaws;
 import org.usfirst.frc.team5809.robot.commands.jaws.StopJaws;
 import org.usfirst.frc.team5809.robot.commands.jaws.TightenJaws;
-import org.usfirst.frc.team5809.robot.commands.lift.LowerLift;
-import org.usfirst.frc.team5809.robot.commands.lift.RaiseLift;
+import org.usfirst.frc.team5809.robot.commands.lift.MoveLift;
 import org.usfirst.frc.team5809.robot.commands.lift.StopLift;
 import org.usfirst.frc.team5809.robot.RobotMap.StartPosition;
+import org.usfirst.frc.team5809.robot.RobotMap.eLiftDistance;
 import org.usfirst.frc.team5809.robot.commands.jaws.GrabJaws;
 import org.usfirst.frc.team5809.robot.commands.jaws.LoosenJaws;
 
@@ -35,10 +35,12 @@ public class OI {
 	public static final Joystick driverStick = new Joystick(0);
 	// public static final Joystick operatorStick = new Joystick(1);
 
-	public static JesubotsButton grabJawsButton = new JesubotsButton(OI.driverStick, LogitechButton.BumperRight);
-	public static JesubotsButton spitJawsButton = new JesubotsButton(OI.driverStick, LogitechButton.BumperLeft);
-	public static JesubotsButton raiseLiftButton = new JesubotsButton(OI.driverStick, LogitechButton.TriggerRight);
-	public static JesubotsButton lowerLiftButton = new JesubotsButton(OI.driverStick, LogitechButton.TriggerLeft);
+	public static JesubotsButton grabJawsButton = new JesubotsButton(OI.driverStick, LogitechButton.B);
+	public static JesubotsButton spitJawsButton = new JesubotsButton(OI.driverStick, LogitechButton.A);
+	public static JesubotsButton lowerLiftHalfButton = new JesubotsButton(OI.driverStick, LogitechButton.BumperRight);
+	public static JesubotsButton raiseLiftHalfButton = new JesubotsButton(OI.driverStick, LogitechButton.BumperLeft);
+	public static JesubotsButton raiseLiftButton = new JesubotsButton(OI.driverStick, LogitechButton.TriggerLeft);
+	public static JesubotsButton lowerLiftButton = new JesubotsButton(OI.driverStick, LogitechButton.TriggerRight);
 	public static JesubotsButton tightenJawsButton = new JesubotsButton(OI.driverStick, LogitechButton.X);
 	public static JesubotsButton loosenJawsButton = new JesubotsButton(OI.driverStick, LogitechButton.Y);
 
@@ -55,7 +57,8 @@ public class OI {
 	public static Destination nearSideOfSwitch;
 	public static Destination defaultSwitch = new Destination();;
 	private static Command autoCommand;
-	private static StartPosition startPosition; 
+	private static StartPosition startPosition;
+	private static eLiftDistance liftHeight = eLiftDistance.kUnknown;
 
 	public static StartPosition getStartPosition() {
 		return startPosition;
@@ -129,31 +132,41 @@ public class OI {
 		if (eStartPosition == StartPosition.LEFT) {
 			if (nearSwitch.getFieldSide() == Destination.eFieldSide.kLeft) {
 				setDestination(nearSwitch);
+				setLiftDistance(eLiftDistance.kHigh);
 			} else if (scale.getFieldSide() == Destination.eFieldSide.kLeft) {
 				setDestination(scale);
+				setLiftDistance(eLiftDistance.kLow);
 			} else {
 				setDestination(defaultSwitch);
+				setLiftDistance(eLiftDistance.kUnknown);
 			}
 		} else if (eStartPosition == StartPosition.RIGHT) {
 			if (nearSwitch.getFieldSide() == Destination.eFieldSide.kRight) {
 				setDestination(nearSwitch);
+				setLiftDistance(eLiftDistance.kHigh);
 			} else if (scale.getFieldSide() == Destination.eFieldSide.kRight) {
 				setDestination(scale);
+				setLiftDistance(eLiftDistance.kLow);
 			} else {
 				setDestination(defaultSwitch);
+				setLiftDistance(eLiftDistance.kUnknown);
 			}
 		} else if (eStartPosition == StartPosition.MIDDLE) {
 			if (nearSwitch.getFieldSide() == Destination.eFieldSide.kRight) {
 				setDestination(nearSideOfSwitch);
+				setLiftDistance(eLiftDistance.kHigh);
 				//OI.destination.setFieldDistance(Destination.eFieldDistance.kMidStart);
 			} else if (nearSwitch.getFieldSide() == Destination.eFieldSide.kLeft) {
 				setDestination(nearSideOfSwitch);
+				setLiftDistance(eLiftDistance.kHigh);
 				//OI.destination.setFieldDistance(Destination.eFieldDistance.kMidStart);
 			} else {
 				setDestination(defaultSwitch);
+				setLiftDistance(eLiftDistance.kUnknown);
 			}
 		} else {
 			setDestination(defaultSwitch);
+			setLiftDistance(eLiftDistance.kUnknown);
 		}
 
 		SmartDashboard.putString("DestinationAuto Info", SmartDashboard.getString("DestinationAuto Info", "")
@@ -182,6 +195,14 @@ public class OI {
 		return OI.side;
 	}
 	
+	public static void setLiftDistance(eLiftDistance distance){
+		OI.liftHeight = distance;
+	}
+	
+	public static eLiftDistance getLiftDistance(){
+		return OI.liftHeight;
+	}
+	
 	public static boolean isMid(){
 		if(OI.getDestination().getFieldDistance() == Destination.eFieldDistance.kNearSide){
 			return true;
@@ -198,15 +219,15 @@ public class OI {
 	public void initButtons() {
 		OI.grabJawsButton.whenPressed(new GrabJaws());
 		OI.spitJawsButton.whenPressed(new SpitJaws());
-		OI.raiseLiftButton.whenPressed(new RaiseLift(RobotMap.defaultLiftTimeout));
-		OI.lowerLiftButton.whenPressed(new LowerLift(RobotMap.defaultLiftTimeout));
+		OI.raiseLiftButton.whenPressed(new MoveLift(RobotMap.LiftHeightMap.kHighDistance));
+		OI.lowerLiftButton.whenPressed(new MoveLift(-RobotMap.LiftHeightMap.kHighDistance));
+		OI.raiseLiftHalfButton.whenPressed(new MoveLift(RobotMap.LiftHeightMap.kLowDistance));
+		OI.lowerLiftHalfButton.whenPressed(new MoveLift(-RobotMap.LiftHeightMap.kLowDistance));
 		OI.tightenJawsButton.whenPressed(new TightenJaws());
 		OI.loosenJawsButton.whenPressed(new LoosenJaws());
 
 		OI.grabJawsButton.whenReleased(new StopJaws());
 		OI.spitJawsButton.whenReleased(new StopJaws());
-		OI.raiseLiftButton.whenReleased(new StopLift());
-		OI.lowerLiftButton.whenReleased(new StopLift());
 	}
 }
 

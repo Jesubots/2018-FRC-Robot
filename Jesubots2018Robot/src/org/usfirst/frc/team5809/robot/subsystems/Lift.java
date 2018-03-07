@@ -1,6 +1,7 @@
 package org.usfirst.frc.team5809.robot.subsystems;
 
 import org.usfirst.frc.team5809.robot.RobotMap;
+import org.usfirst.frc.team5809.robot.OI;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
  */
 public class Lift extends Subsystem {
 
+	private RobotMap.eLiftDistance height;
 	private static Lift instance;
 
 	public static Lift getInstance() {
@@ -33,6 +35,8 @@ public class Lift extends Subsystem {
 	public DifferentialDrive liftDrive = new DifferentialDrive(leftLift, rightLift);
 
 	public void initDefaultCommand() {
+		height = OI.getLiftDistance();
+		
 		liftDrive.setSafetyEnabled(false);
 		leftLift.configOpenloopRamp(2, 0);
 		rightLift.configOpenloopRamp(2, 0);
@@ -48,9 +52,8 @@ public class Lift extends Subsystem {
 		liftDrive.tankDrive(-power, power);
 	}
 
-	public void stopLift(double power) {
-		power = 0;
-		liftDrive.tankDrive(power, power);
+	public void stopLift() {
+		liftDrive.tankDrive(0.0, 0.0);
 	}
 
 	public double getEncoderValue() {
@@ -59,5 +62,18 @@ public class Lift extends Subsystem {
 
 	public void resetEncoders() {
 		leftLift.setSelectedSensorPosition(0, 0, 0);
+	}
+	
+	public double chooseHeight() {
+		switch (height) {
+		case kHigh:
+			return RobotMap.LiftHeightMap.kLowDistance;
+		case kLow:
+			return RobotMap.LiftHeightMap.kHighDistance;
+		case kUnknown:
+			return RobotMap.LiftHeightMap.kUnknownDistance;
+		default:
+			return RobotMap.LiftHeightMap.kUnknownDistance;
+		}
 	}
 }

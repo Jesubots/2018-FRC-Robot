@@ -8,25 +8,13 @@ public class Destination {
 
 	public static enum eFieldDistance {
 		kNearSide, kNear, kMiddle, kFar, kUnknown, 
-	};
-
-	// it may proper to define this in RobotMap
-	public static class EncoderDistanceMap {
-		public static final double kUnknownDistance = 0.0;
-		public static final double kNearDistance = 101034.0;
-		public static final double kMiddleDistance = 207530.0;
-		public static final double kFarDistance = 30000.0;
-		public static final double kNearSide = 27306.0;
-		public static final double kNearSideSeg1 = 27306.0;
-		public static final double kNearSideSeg2 = 27306.0 - 47786.0 ;  //	public static double autoDistanceDifference = 47786.0;
-		public static final double kNearSideSeg3 = 2.0 * 27306.0;
-	}	
+	};	
 	
 	public static enum NearSideDestination  {
 		DRIVE_SEG1 {
 			@Override
 			public double getDriveData() {
-				return EncoderDistanceMap.kNearSideSeg1;
+				return RobotMap.EncoderDistanceMap.kNearSideSeg1;
 			}
 		},
 		DRIVE_TURN1 {
@@ -41,7 +29,7 @@ public class Destination {
 		DRIVE_SEG2 {
 			@Override
 			public double getDriveData() {
-				return EncoderDistanceMap.kNearSideSeg2;
+				return RobotMap.EncoderDistanceMap.kNearSideSeg2;
 			}
 		},
 		DRIVE_TURN2 {
@@ -56,7 +44,7 @@ public class Destination {
 		DRIVE_SEG3 {
 			@Override
 			public double getDriveData() {
-				return EncoderDistanceMap.kNearSideSeg3;
+				return RobotMap.EncoderDistanceMap.kNearSideSeg3;
 			}
 		};
 
@@ -118,15 +106,15 @@ public class Destination {
 	public double getEncoderDistance() {
 		switch (this.fieldDistance) {
 		case kNear:
-			return EncoderDistanceMap.kNearDistance;
+			return RobotMap.EncoderDistanceMap.kNearDistance;
 		case kMiddle:
-			return EncoderDistanceMap.kMiddleDistance;
+			return RobotMap.EncoderDistanceMap.kMiddleDistance;
 		case kFar:
-			return EncoderDistanceMap.kFarDistance;
+			return RobotMap.EncoderDistanceMap.kFarDistance;
 		case kNearSide:
-			return EncoderDistanceMap.kNearSide;
+			return RobotMap.EncoderDistanceMap.kNearSide;
 		default:
-			return EncoderDistanceMap.kUnknownDistance;
+			return RobotMap.EncoderDistanceMap.kUnknownDistance;
 		}
 	}
 

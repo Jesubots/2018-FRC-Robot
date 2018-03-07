@@ -8,18 +8,22 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class LowerLift extends Command {
-
-	private double timeout = 0.0;
-	public LowerLift(double time) {
+public class MoveLift extends Command {
+	
+	
+	private double target;
+	private double threshold = 50.0;
+	public MoveLift(double targetHeight) {
 		requires(Robot.lift);
-		timeout = time;
+		target = targetHeight;
 	}
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
-		Robot.lift.liftDown(RobotMap.defaultLiftPower);
-		setTimeout(timeout);
+		if(target < 0)
+			Robot.lift.liftUp(-RobotMap.defaultLiftPower);
+		else
+			Robot.lift.liftUp(RobotMap.defaultLiftPower);
 	}
 
 	// Called repeatedly when this Command is scheduled to run
@@ -28,17 +32,17 @@ public class LowerLift extends Command {
 
 	// Make this return true when this Command no longer needs to run execute()
 	protected boolean isFinished() {
-		return isTimedOut();
+		return (target - Math.abs(Robot.lift.getEncoderValue()) < threshold);
 	}
 
 	// Called once after isFinished returns true
 	protected void end() {
-		Robot.lift.stopLift(0);
+		Robot.lift.stopLift();
 	}
 
 	// Called when another command which requires one or more of the same
 	// subsystems is scheduled to run
 	protected void interrupted() {
-		Robot.lift.stopLift(0);
+		Robot.lift.stopLift();
 	}
 }

@@ -15,7 +15,7 @@ public class StopLift extends Command {
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
-		Robot.lift.stopLift(0.0);
+		Robot.lift.stopLift();
 	}
 
 	// Called repeatedly when this Command is scheduled to run
