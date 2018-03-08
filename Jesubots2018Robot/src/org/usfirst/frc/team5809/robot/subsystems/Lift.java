@@ -6,6 +6,7 @@ import org.usfirst.frc.team5809.robot.OI;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.VictorSP;
 //import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -31,12 +32,13 @@ public class Lift extends Subsystem {
 
 	public WPI_TalonSRX leftLift = new WPI_TalonSRX(RobotMap.leftLiftCAN);
 	public WPI_TalonSRX rightLift = new WPI_TalonSRX(RobotMap.rightLiftCAN);
+	public VictorSP winch = new VictorSP(RobotMap.winchVictor);
 
 	public DifferentialDrive liftDrive = new DifferentialDrive(leftLift, rightLift);
 
 	public void initDefaultCommand() {
 		height = OI.getLiftDistance();
-		
+
 		liftDrive.setSafetyEnabled(false);
 		leftLift.configOpenloopRamp(2, 0);
 		rightLift.configOpenloopRamp(2, 0);
@@ -64,6 +66,14 @@ public class Lift extends Subsystem {
 		leftLift.setSelectedSensorPosition(0, 0, 0);
 	}
 	
+	public void startWinch(double winchSpeed){
+		winch.set(winchSpeed);
+	}
+	
+	public void stopWinch(){
+		winch.set(0);
+	}
+
 	public double chooseHeight() {
 		switch (height) {
 		case kHigh:

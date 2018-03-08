@@ -22,33 +22,6 @@ public class DestinationAuto extends CommandGroup {
 	private double targetDistance = 0.0;
 	private double targetDegree = 0.0;
 
-	/*
-	 * public DestinationAuto() { targetDistance =
-	 * OI.getDestination().getEncoderDistance(); targetDegree =
-	 * OI.getDestination().getPivotTurnDegrees();
-	 * 
-	 * if(OI.isMid()){ targetDegree *= -1; }
-	 * 
-	 * SmartDashboard.putString("DestinationAuto Info",
-	 * SmartDashboard.getString("DestinationAuto Info", "") +
-	 * "destination distance = " + targetDistance + ", destination degree = " +
-	 * targetDegree);
-	 * 
-	 * System.out.println("destination distance = " + targetDistance +
-	 * ", destination degree = " + targetDegree);
-	 * 
-	 * addSequential(new DriveStraightDistance(targetDistance, timeout));
-	 * addSequential(new PivotTurn(1.0, targetDegree, timeout, false));
-	 * 
-	 * if(OI.isMid()){ addSequential(new DriveStraightDistance(targetDistance -
-	 * RobotMap.autoDistanceDifference, timeout)); addSequential(new
-	 * PivotTurn(1.0, -targetDegree, timeout, false)); addSequential(new
-	 * DriveStraightDistance(targetDistance * 2, timeout)); }
-	 * 
-	 * addSequential(new RaiseLift(RobotMap.defaultLiftTimeout));
-	 * addSequential(new SpitJaws()); }
-	 */
-
 	public DestinationAuto() {
 
 		if (OI.getDestination().getFieldDistance() == Destination.eFieldDistance.kUnknown) {

@@ -23,27 +23,36 @@ public class Jaws extends Subsystem {
 
 	}
 
-	public VictorSP jawDrive = new VictorSP(RobotMap.jawCAN);
+	public VictorSP jaw = new VictorSP(RobotMap.jawVictor);
+	public VictorSP wrist = new VictorSP(RobotMap.wristVictor);
 
 	public Jaws() {
-		jawDrive.set(0.0);
-		jawDrive.setSafetyEnabled(false);
+		jaw.set(0.0);
+		jaw.setSafetyEnabled(false);
 	}
 
 	public void initDefaultCommand() {
-		jawDrive.setSafetyEnabled(false);
+		jaw.setSafetyEnabled(false);
 	}
 
 	public void grabJaws(double jawSpeed) {
-		jawDrive.set(-jawSpeed);
+		jaw.set(-jawSpeed);
 	}
 
 	public void spitJaws(double jawSpeed) {
-		jawDrive.set(jawSpeed);
+		jaw.set(jawSpeed);
 	}
 
 	public void stopJaws() {
-		jawDrive.set(0);
+		jaw.set(0);
+	}
+
+	public void moveWrist(double wristSpeed) {
+		wrist.set(wristSpeed);
+	}
+
+	public void stopWrist(double wristSpeed) {
+		wrist.set(0);
 	}
 
 }

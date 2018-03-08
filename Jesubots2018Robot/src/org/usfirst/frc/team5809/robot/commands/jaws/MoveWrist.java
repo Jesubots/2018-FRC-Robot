@@ -8,15 +8,18 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class StopJaws extends Command {
+public class MoveWrist extends Command {
 
-	public StopJaws() {
+	private double power;
+
+	public MoveWrist(double input) {
 		requires(Robot.jaws);
+		power = input;
 	}
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
-		Robot.jaws.stopJaws();
+		Robot.jaws.moveWrist(power);
 	}
 
 	// Called repeatedly when this Command is scheduled to run

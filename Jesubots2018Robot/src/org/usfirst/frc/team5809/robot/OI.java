@@ -11,13 +11,16 @@ import org.usfirst.frc.team5809.lib.drivers.JesubotsButton;
 import org.usfirst.frc.team5809.lib.drivers.JesubotsButton.LogitechButton;
 import org.usfirst.frc.team5809.robot.commands.jaws.SpitJaws;
 import org.usfirst.frc.team5809.robot.commands.jaws.StopJaws;
+import org.usfirst.frc.team5809.robot.commands.jaws.StopWrist;
 import org.usfirst.frc.team5809.robot.commands.jaws.TightenJaws;
 import org.usfirst.frc.team5809.robot.commands.lift.MoveLift;
+import org.usfirst.frc.team5809.robot.commands.lift.StartWinch;
 import org.usfirst.frc.team5809.robot.commands.lift.StopLift;
 import org.usfirst.frc.team5809.robot.RobotMap.StartPosition;
 import org.usfirst.frc.team5809.robot.RobotMap.eLiftDistance;
 import org.usfirst.frc.team5809.robot.commands.jaws.GrabJaws;
 import org.usfirst.frc.team5809.robot.commands.jaws.LoosenJaws;
+import org.usfirst.frc.team5809.robot.commands.jaws.MoveWrist;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
@@ -35,30 +38,36 @@ public class OI {
 	public static final Joystick driverStick = new Joystick(0);
 	// public static final Joystick operatorStick = new Joystick(1);
 
+	// jaw buttons
 	public static JesubotsButton grabJawsButton = new JesubotsButton(OI.driverStick, LogitechButton.B);
 	public static JesubotsButton spitJawsButton = new JesubotsButton(OI.driverStick, LogitechButton.A);
+	public static JesubotsButton tightenJawsButton = new JesubotsButton(OI.driverStick, LogitechButton.X);
+	public static JesubotsButton winchButton = new JesubotsButton(OI.driverStick, LogitechButton.Y);
+	public static JesubotsButton wristUpButton = new JesubotsButton(OI.driverStick, LogitechButton.Start);
+	public static JesubotsButton wristDownButton = new JesubotsButton(OI.driverStick, LogitechButton.Back);
+	// lift buttons
 	public static JesubotsButton lowerLiftHalfButton = new JesubotsButton(OI.driverStick, LogitechButton.BumperRight);
 	public static JesubotsButton raiseLiftHalfButton = new JesubotsButton(OI.driverStick, LogitechButton.BumperLeft);
 	public static JesubotsButton raiseLiftButton = new JesubotsButton(OI.driverStick, LogitechButton.TriggerLeft);
 	public static JesubotsButton lowerLiftButton = new JesubotsButton(OI.driverStick, LogitechButton.TriggerRight);
-	public static JesubotsButton tightenJawsButton = new JesubotsButton(OI.driverStick, LogitechButton.X);
-	public static JesubotsButton loosenJawsButton = new JesubotsButton(OI.driverStick, LogitechButton.Y);
 
 	// private static double driveTime;
+	private static Command autoCommand;
+
 	private static double driveMag;
 	private static double pivotTurnDegree;
 	private static double driveTime;
 	private static double encoderPosition;
 	private static double side;
+	private static boolean jawsTightened = false;
+	private static StartPosition startPosition;
+	private static eLiftDistance liftHeight = eLiftDistance.kUnknown;
 	private static Destination destination = new Destination();
 	public static Destination nearSwitch;
 	public static Destination scale;
 	public static Destination farSwitch;
 	public static Destination nearSideOfSwitch;
 	public static Destination defaultSwitch = new Destination();;
-	private static Command autoCommand;
-	private static StartPosition startPosition;
-	private static eLiftDistance liftHeight = eLiftDistance.kUnknown;
 
 	public static StartPosition getStartPosition() {
 		return startPosition;
@@ -104,11 +113,15 @@ public class OI {
 		OI.driveTime = driveTime;
 	}
 
+	public void getPOVDirection() {
+
+	}
+
 	public static void setAutoInfo(String startPosition) {
 
 		// convert string to enum
 		StartPosition eStartPosition = StartPosition.valueOf(startPosition);
-		setStartPosition( eStartPosition );
+		setStartPosition(eStartPosition);
 
 		String gameData;
 		gameData = OI.getGameState();
@@ -155,11 +168,9 @@ public class OI {
 			if (nearSwitch.getFieldSide() == Destination.eFieldSide.kRight) {
 				setDestination(nearSideOfSwitch);
 				setLiftDistance(eLiftDistance.kHigh);
-				//OI.destination.setFieldDistance(Destination.eFieldDistance.kMidStart);
 			} else if (nearSwitch.getFieldSide() == Destination.eFieldSide.kLeft) {
 				setDestination(nearSideOfSwitch);
 				setLiftDistance(eLiftDistance.kHigh);
-				//OI.destination.setFieldDistance(Destination.eFieldDistance.kMidStart);
 			} else {
 				setDestination(defaultSwitch);
 				setLiftDistance(eLiftDistance.kUnknown);
@@ -194,20 +205,17 @@ public class OI {
 	public static double getSide() {
 		return OI.side;
 	}
-	
-	public static void setLiftDistance(eLiftDistance distance){
+
+	public static void setLiftDistance(eLiftDistance distance) {
 		OI.liftHeight = distance;
 	}
-	
-	public static eLiftDistance getLiftDistance(){
+
+	public static eLiftDistance getLiftDistance() {
 		return OI.liftHeight;
 	}
-	
-	public static boolean isMid(){
-		if(OI.getDestination().getFieldDistance() == Destination.eFieldDistance.kNearSide){
-			return true;
-		}
-		return false;
+
+	public static void setJawsTightened() {
+		OI.jawsTightened = !OI.jawsTightened;
 	}
 
 	public static String getGameState() {
@@ -223,24 +231,21 @@ public class OI {
 		OI.lowerLiftButton.whenPressed(new MoveLift(-RobotMap.LiftHeightMap.kHighDistance));
 		OI.raiseLiftHalfButton.whenPressed(new MoveLift(RobotMap.LiftHeightMap.kLowDistance));
 		OI.lowerLiftHalfButton.whenPressed(new MoveLift(-RobotMap.LiftHeightMap.kLowDistance));
-		OI.tightenJawsButton.whenPressed(new TightenJaws());
-		OI.loosenJawsButton.whenPressed(new LoosenJaws());
+		OI.wristUpButton.whenPressed(new MoveWrist(RobotMap.defaultWristPower));
+		OI.wristDownButton.whenPressed(new MoveWrist(-RobotMap.defaultWristPower));
 
+		OI.winchButton.whileHeld(new StartWinch());
+
+		if (jawsTightened) {
+			OI.tightenJawsButton.whenPressed(new LoosenJaws());
+		} else {
+			OI.tightenJawsButton.whenPressed(new TightenJaws());
+		}
+
+		OI.wristUpButton.whenReleased(new StopWrist());
+		OI.wristUpButton.whenReleased(new StopWrist());
 		OI.grabJawsButton.whenReleased(new StopJaws());
 		OI.spitJawsButton.whenReleased(new StopJaws());
+
 	}
 }
-
-/*
- * public static void setGameAuto() { String gameData; gameData =
- * OI.getGameState();
- * 
- * if (gameData.length() > 0) { if (gameData.charAt(0) == 'L') { if
- * (gameData.charAt(1) == 'L') { if (gameData.charAt(2) == 'L') { // LLL
- * OI.autoCommand = new SwitchLeftAuto(); } } else { if (gameData.charAt(2) ==
- * 'L') { // LRL OI.autoCommand = new SwitchLeftAuto(); } } } else { if
- * (gameData.charAt(1) == 'L') { if (gameData.charAt(2) == 'L') { // RLR
- * OI.autoCommand = new SwitchRightAuto(); } } else { if (gameData.charAt(2) ==
- * 'L') { // RRR OI.autoCommand = new SwitchRightAuto(); } } } } else { // what
- * if gameData does not exist? } }
- */

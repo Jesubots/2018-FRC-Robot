@@ -9,7 +9,6 @@ package org.usfirst.frc.team5809.robot;
 
 import java.util.Arrays;
 
-
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
  * to a variable name. This provides flexibility changing wiring, makes checking
@@ -36,16 +35,20 @@ public class RobotMap {
 	public static int midLeftCAN = 4;
 	public static int midRightCAN = 3;
 
-	public static int jawCAN = 2;
+	public static int jawVictor = 0;
+	public static int wristVictor = 1;
 	public static double openJawsTimeout = 3.0;
 	public static double closeJawsTimeout = 3.0;
 	public static double stopJawsTimeout = .01;
 	public static double defaultGrabJawsPower = .5;
 	public static double defaultSpitJawsPower = .75;
+	public static double defaultWristPower = .75;
 
+	public static int leftLiftCAN = 2;
+	public static int rightLiftCAN = 6;
+	public static int winchVictor = 0;
 	public static double defaultLiftTimeout = 5.0;
-	public static int leftLiftCAN = 0;
-	public static int rightLiftCAN = 1;
+	public static double defaultWinchPower = .5;
 	public static double defaultLiftPower = .5;
 
 	public static double minMotorPower = 0.0;
@@ -60,12 +63,12 @@ public class RobotMap {
 	public static double rotationConstant = 4096.0;
 
 	public static double defaultEncoderDistance = 0.0;
-	
+
 	public static int defaultAutoSide = 1;
 	public static double autoDistanceDifference = 47786.0;
-	
+
 	public static enum eLiftDistance {
-			kHigh, kLow, kUnknown
+		kHigh, kLow, kUnknown
 	};
 
 	public class PivotTurnPIDMap {
@@ -92,7 +95,7 @@ public class RobotMap {
 		public static final double kF = 0.0;
 		public static final double kToleranceDegrees = 1.0f;
 	}
-	
+
 	public static class EncoderDistanceMap {
 		public static final double kUnknownDistance = 0.0;
 		public static final double kNearDistance = 101034.0;
@@ -100,10 +103,15 @@ public class RobotMap {
 		public static final double kFarDistance = 30000.0;
 		public static final double kNearSide = 27306.0;
 		public static final double kNearSideSeg1 = 27306.0;
-		public static final double kNearSideSeg2 = 27306.0 - 47786.0 ;  //	public static double autoDistanceDifference = 47786.0;
+		public static final double kNearSideSeg2 = 27306.0 - 47786.0; // public
+																		// static
+																		// double
+																		// autoDistanceDifference
+																		// =
+																		// 47786.0;
 		public static final double kNearSideSeg3 = 2.0 * 27306.0;
 	}
-	
+
 	public static class LiftHeightMap {
 		public static final double kHighDistance = 8000.0;
 		public static final double kLowDistance = 4000.0;
@@ -115,8 +123,8 @@ public class RobotMap {
 
 		public static String[] names() {
 			String valueStr = Arrays.toString(StartPosition.values());
-			return valueStr.substring(1, valueStr.length()-1).replace(" ","").split(",");
-			
+			return valueStr.substring(1, valueStr.length() - 1).replace(" ", "").split(",");
+
 		}
 	}
 }

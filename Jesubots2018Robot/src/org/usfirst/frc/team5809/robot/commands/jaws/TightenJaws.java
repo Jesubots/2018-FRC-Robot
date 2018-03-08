@@ -1,5 +1,6 @@
 package org.usfirst.frc.team5809.robot.commands.jaws;
 
+import org.usfirst.frc.team5809.robot.OI;
 import org.usfirst.frc.team5809.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -15,6 +16,7 @@ public class TightenJaws extends Command {
 	// Called just before this Command runs the first time
 	protected void initialize() {
 		Robot.pneumatics.tightenJaws();
+		OI.setJawsTightened();
 	}
 
 	// Called repeatedly when this Command is scheduled to run
