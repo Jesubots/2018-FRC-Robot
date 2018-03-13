@@ -1,6 +1,11 @@
 package org.usfirst.frc.team5809.robot.subsystems;
 
+import org.usfirst.frc.team5809.robot.OI;
+import org.usfirst.frc.team5809.robot.RobotMap;
+
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
@@ -21,37 +26,29 @@ public class Pneumatics extends Subsystem {
 
 	}
 
-    public DoubleSolenoid leftJawPiston = new DoubleSolenoid(0,1);
-    public DoubleSolenoid rightJawPiston = new DoubleSolenoid(2,3);
-    public DoubleSolenoid mainJawPiston = new DoubleSolenoid(4,5);
+	Compressor compressor = new Compressor(RobotMap.compressorPort);
+    //public DoubleSolenoid leftJawPiston = new DoubleSolenoid(RobotMap.SolenoidMap.leftIn, RobotMap.SolenoidMap.leftOut);
+    //public DoubleSolenoid rightJawPiston = new DoubleSolenoid(RobotMap.SolenoidMap.rightIn, RobotMap.SolenoidMap.rightOut);
+    public DoubleSolenoid mainJawPiston = new DoubleSolenoid(RobotMap.SolenoidMap.mainIn, RobotMap.SolenoidMap.mainOut);
 
     public void initDefaultCommand() {
         
     }
     
-    public void tightenJaws(){
-    	mainJawPiston.set(DoubleSolenoid.Value.kForward);
+    public void openJaws(){
+    	//leftJawPiston.set(Value.kForward);
+    	//rightJawPiston.set(Value.kForward);
+    	mainJawPiston.set(Value.kForward);
+    	System.out.println(mainJawPiston.get());
     }
     
-    public void loosenJaws(){
-    	mainJawPiston.set(DoubleSolenoid.Value.kReverse);
+    public void closeJaws(){
+    	//leftJawPiston.set(Value.kOff);
+    	//rightJawPiston.set(Value.kOff);
+    	mainJawPiston.set(Value.kReverse);
+    	System.out.println(mainJawPiston.get());
     }
     
-    public void openLeftJaw(){
-    	leftJawPiston.set(DoubleSolenoid.Value.kForward);
-    }
-    
-    public void closeLeftJaw(){
-    	leftJawPiston.set(DoubleSolenoid.Value.kReverse);
-    }
-    
-    public void openRightJaw(){
-    	rightJawPiston.set(DoubleSolenoid.Value.kForward);
-    }
-    
-    public void closeRightJaw(){
-    	rightJawPiston.set(DoubleSolenoid.Value.kReverse);
-    }
     
 }
 

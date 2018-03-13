@@ -21,9 +21,9 @@ public class MoveLift extends Command {
 	// Called just before this Command runs the first time
 	protected void initialize() {
 		if(target < 0)
-			Robot.lift.liftUp(-RobotMap.defaultLiftPower);
+			Robot.lift.moveLift(-RobotMap.defaultLiftPower);
 		else
-			Robot.lift.liftUp(RobotMap.defaultLiftPower);
+			Robot.lift.moveLift(RobotMap.defaultLiftPower);
 	}
 
 	// Called repeatedly when this Command is scheduled to run

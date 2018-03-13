@@ -18,6 +18,8 @@ import org.usfirst.frc.team5809.robot.subsystems.Jaws;
 import org.usfirst.frc.team5809.robot.subsystems.Lift;
 import org.usfirst.frc.team5809.robot.subsystems.Pneumatics;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -75,6 +77,7 @@ public class Robot extends TimedRobot {
 				m_position_chooser.addDefault(display, s);
 
 			} else {
+				
 				m_position_chooser.addObject(display, s);
 			}
 
@@ -82,7 +85,7 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putData("Robot Start Position", m_position_chooser);
 
 		m_chooser.addDefault("Default Auto", new DriveStraightTime());
-		// m_chooser.addObject("Drive Straight Time", new DriveStraightTime());
+		m_chooser.addObject("Drive Straight Time", new DriveStraightTime());
 		m_chooser.addObject("Drive Straight Distance", new DriveStraightDistance());
 		m_chooser.addObject("Drive Straight Encoders", new DriveStraightEncoders());
 		m_chooser.addObject("Pivot Turn", new PivotTurn());
@@ -96,6 +99,22 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putNumber("Drive Straight Time", RobotMap.defaultDriveTimeValue);
 		SmartDashboard.putNumber("DriveMag", RobotMap.defaultDriveMag);
 		SmartDashboard.putNumber("Pivot Turn Degrees", RobotMap.defaultPivotTurn);
+		SmartDashboard.putNumber("TEMP AUTO SIDE", 1.0);
+		
+		
+		CameraServer camServer = CameraServer.getInstance();
+        UsbCamera cam0 = null,cam1 = null;
+        camServer.addServer("cam0");
+        if (camServer != null){
+        	cam0 = camServer.startAutomaticCapture();
+        	if (cam0.isConnected()) {
+        		cam0.setResolution(320, 160);
+        		cam0.setFPS(20);
+        	
+        	}
+        }
+		 
+		
 
 		m_oi = new OI();
 	}
@@ -107,7 +126,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void disabledInit() {
-
+		pneumatics.closeJaws();
+		OI.setJawsOpen(false);
 	}
 
 	@Override
@@ -118,7 +138,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousInit() {
 		m_autonomousCommand = m_chooser.getSelected();
-		OI.setSide(SmartDashboard.getNumber("Side", 0.0));
+		OI.setSide(SmartDashboard.getNumber("Side", 1.0));
 
 		// m_oi.setAutoInfo(m_oi.getSide());
 		OI.setAutoInfo(m_position_chooser.getSelected());
@@ -180,5 +200,7 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putNumber("Encoder Position", driveTrain.getEncoderPosition());
 		SmartDashboard.putNumber("Right Encoder Position", driveTrain.getRightEncoderPosition());
 		SmartDashboard.putNumber("Left Position", driveTrain.getLeftEncoderPosition());
+		SmartDashboard.putNumber("Lift Encoder", lift.getEncoderValue());
+		SmartDashboard.putBoolean("JAWS OPEN?", OI.getJawsOpen());
 	}
 }

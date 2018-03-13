@@ -14,6 +14,10 @@ public class DriveStraightTime extends Command {
 		// Use requires() here to declare subsystem dependencies
 		requires(Robot.driveTrain);
 	}
+	
+	public DriveStraightTime(double time){
+		OI.setDriveTime(time);
+	}
 
 	// Called just before this Command runs the first time
 	protected void initialize() {

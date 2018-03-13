@@ -2,30 +2,45 @@ package org.usfirst.frc.team5809.robot.commands.jaws;
 
 import org.usfirst.frc.team5809.robot.OI;
 import org.usfirst.frc.team5809.robot.Robot;
+
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
  *
  */
-public class TightenJaws extends Command {
+public class ToggleJawsOpen extends Command {
 
-	public TightenJaws() {
+	private boolean jawsOpen;
+	public ToggleJawsOpen() {
 		requires(Robot.pneumatics);
+		
+		jawsOpen = OI.getJawsOpen();
 	}
 
 	// Called just before this Command runs the first time
-	protected void initialize() {
-		Robot.pneumatics.tightenJaws();
-		OI.setJawsTightened();
+	protected void initialize() {	
+		
 	}
 
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
+		/*
+		 jawsOpen = OI.getJawsOpen();
+		if(jawsOpen){
+			Robot.pneumatics.closeJaws();
+			OI.setJawsOpen(false);
+		} else {
+			Robot.pneumatics.openJaws();
+			OI.setJawsOpen(true);
+		}
+		 */
+		Robot.pneumatics.openJaws();
+		
 	}
 
 	// Make this return true when this Command no longer needs to run execute()
 	protected boolean isFinished() {
-		return false;
+		return true;
 	}
 
 	// Called once after isFinished returns true

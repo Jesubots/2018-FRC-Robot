@@ -6,6 +6,7 @@ import org.usfirst.frc.team5809.robot.Robot;
 import org.usfirst.frc.team5809.robot.RobotMap;
 import org.usfirst.frc.team5809.robot.RobotMap.StartPosition;
 import org.usfirst.frc.team5809.robot.commands.PID.DriveStraightDistance;
+import org.usfirst.frc.team5809.robot.commands.PID.DriveStraightTime;
 import org.usfirst.frc.team5809.robot.commands.PID.PivotTurn;
 import org.usfirst.frc.team5809.robot.commands.jaws.SpitJaws;
 import org.usfirst.frc.team5809.robot.commands.lift.MoveLift;
@@ -29,6 +30,7 @@ public class DestinationAuto extends CommandGroup {
 					SmartDashboard.getString("DestinationAuto Info", "") + " kUnknown ");
 
 			System.out.println(" DestinationAuto: kUnknown ");
+			addSequential(new DriveStraightTime(2.0));
 			return;
 
 		} else if (OI.getDestination().getFieldDistance() == Destination.eFieldDistance.kNearSide) {
@@ -37,8 +39,22 @@ public class DestinationAuto extends CommandGroup {
 					SmartDashboard.getString("DestinationAuto Info", "") + " kNearSide ");
 
 			System.out.println(" kNearSide ");
-
+			
 			addSequential(
+					new DriveStraightTime(1.0));
+			addSequential(
+					new PivotTurn(1.0, Destination.NearSideDestination.DRIVE_TURN1.getDriveData(), timeout, false));
+			addSequential(
+					new DriveStraightTime(1.0));
+			addSequential(
+					new PivotTurn(1.0, Destination.NearSideDestination.DRIVE_TURN2.getDriveData(), timeout, false));
+			addSequential(
+					new MoveLift(RobotMap.LiftHeightMap.kLowDistance));
+			addSequential(
+					new DriveStraightTime(1.0));
+
+			/*
+			 * addSequential(
 					new DriveStraightDistance(Destination.NearSideDestination.DRIVE_SEG1.getDriveData(), timeout));
 			addSequential(
 					new PivotTurn(1.0, Destination.NearSideDestination.DRIVE_TURN1.getDriveData(), timeout, false));
@@ -48,6 +64,7 @@ public class DestinationAuto extends CommandGroup {
 					new PivotTurn(1.0, Destination.NearSideDestination.DRIVE_TURN2.getDriveData(), timeout, false));
 			addSequential(
 					new DriveStraightDistance(Destination.NearSideDestination.DRIVE_SEG3.getDriveData(), timeout));
+			 */
 
 		} else {
 
@@ -59,13 +76,13 @@ public class DestinationAuto extends CommandGroup {
 
 			System.out.println("destination distance = " + targetDistance + ", destination degree = " + targetDegree);
 
-			addSequential(new DriveStraightDistance(targetDistance, timeout));
+			addSequential(new DriveStraightTime(2.0));
 			addSequential(new PivotTurn(1.0, targetDegree, timeout, false));
+			addSequential(new MoveLift(RobotMap.LiftHeightMap.kLowDistance));
+			addSequential(new DriveStraightTime(.5));
 
 		}
 		
-		addSequential(new MoveLift(Robot.lift.chooseHeight()));
 		addSequential(new SpitJaws());
-		addSequential(new MoveLift(-Robot.lift.chooseHeight()));
 	}
 }

@@ -35,28 +35,30 @@ public class RobotMap {
 	public static int midLeftCAN = 4;
 	public static int midRightCAN = 3;
 
-	public static int jawVictor = 0;
-	public static int wristVictor = 1;
+	public static int jawRightVictor = 0;
+	public static int jawLeftVictor = 1;
+	public static int wristVictor = 2;
 	public static double openJawsTimeout = 3.0;
 	public static double closeJawsTimeout = 3.0;
 	public static double stopJawsTimeout = .01;
-	public static double defaultGrabJawsPower = .5;
-	public static double defaultSpitJawsPower = .75;
-	public static double defaultWristPower = .75;
+	public static double defaultGrabJawsPower = .75;
+	public static double defaultSpitJawsPower = 1.0;
+	public static double defaultWristPower = .4;
 
 	public static int leftLiftCAN = 2;
 	public static int rightLiftCAN = 6;
-	public static int winchVictor = 0;
+	public static int winchLeftVictor = 3;
+	public static int winchRightVictor = 4;
 	public static double defaultLiftTimeout = 5.0;
 	public static double defaultWinchPower = .5;
-	public static double defaultLiftPower = .5;
+	public static double defaultLiftPower = 1.0;
 
 	public static double minMotorPower = 0.0;
 	public static double tolerancePercent = 2;
 
 	public static double defaultDriveMag = 0.5;
 	public static double defaultDriveDistanceValue = 0;
-	public static double defaultDriveTimeValue = 0;
+	public static double defaultDriveTimeValue = 2.5;
 	public static double defaultPivotTurn = 90.0;
 
 	public static double gearRatio = 1.8125;
@@ -66,6 +68,8 @@ public class RobotMap {
 
 	public static int defaultAutoSide = 1;
 	public static double autoDistanceDifference = 47786.0;
+
+	public static int compressorPort = 0;
 
 	public static enum eLiftDistance {
 		kHigh, kLow, kUnknown
@@ -110,6 +114,16 @@ public class RobotMap {
 																		// =
 																		// 47786.0;
 		public static final double kNearSideSeg3 = 2.0 * 27306.0;
+	}
+	
+	public class SolenoidMap {
+		public static final int leftIn = 0;
+		public static final int leftOut = 1;
+		public static final int rightIn = 2;
+		public static final int rightOut = 3;
+		public static final int mainIn = 0;
+		public static final int mainOut = 1;
+
 	}
 
 	public static class LiftHeightMap {

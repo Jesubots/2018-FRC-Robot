@@ -14,7 +14,7 @@ public class JesubotsButton extends Button {
 	}
 
 	public enum LogitechButton {
-		X(1), A(2), B(3), Y(4), BumperRight(5), BumperLeft(6), TriggerLeft(7), TriggerRight(8), 
+		X(1), A(2), B(3), Y(4), BumperRight(6), BumperLeft(5), TriggerLeft(7), TriggerRight(8), 
 		Back(9), Start(10), StickLeft(11), StickRight(12);
 		public final int value;
 

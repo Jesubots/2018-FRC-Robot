@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
@@ -30,6 +31,9 @@ public class DriveTrain extends Subsystem {
 	public WPI_TalonSRX rightFollowerMid = new WPI_TalonSRX(RobotMap.midRightCAN);
 	public WPI_TalonSRX rightMaster = new WPI_TalonSRX(RobotMap.backRightCAN);
 	public WPI_TalonSRX leftMaster = new WPI_TalonSRX(RobotMap.backLeftCAN);
+	// public WPI_TalonSRX rightFollowerMid = new
+	// WPI_TalonSRX(RobotMap.backRightCAN);
+	// public WPI_TalonSRX rightMaster = new WPI_TalonSRX(RobotMap.midRightCAN);
 
 	DifferentialDrive robotDrive = new DifferentialDrive(leftMaster, rightMaster);
 
@@ -41,6 +45,8 @@ public class DriveTrain extends Subsystem {
 	double f_magnitude;
 	double pivotTurnRate;
 	private static DriveTrain instance;
+	private boolean slowDrive;
+	private double speedModifier;
 
 	public DriveTrain() {
 		/*
@@ -56,34 +62,11 @@ public class DriveTrain extends Subsystem {
 		 */
 
 		// robotDrive.setSafetyEnabled(false);
-
-		leftFollowerMid.configOpenloopRamp(2, 0);
-		rightMaster.configOpenloopRamp(2, 0);
-
 		leftFollowerMid.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
 
 		leftFollowerMid.setSensorPhase(true);
 		rightMaster.setSensorPhase(true);
-
-		/*
-		 * leftFollowerBack.configSelectedFeedbackSensor(FeedbackDevice.
-		 * QuadEncoder, 0, 0);
-		 * rightFollowerBack.configSelectedFeedbackSensor(FeedbackDevice.
-		 * QuadEncoder, 0, 0);
-		 * leftFollowerFront.configSelectedFeedbackSensor(FeedbackDevice.
-		 * QuadEncoder, 0, 0);
-		 * rightFollowerFront.configSelectedFeedbackSensor(FeedbackDevice.
-		 * QuadEncoder, 0, 0); leftFollowerBack.setSensorPhase(true);
-		 * rightFollowerBack.setSensorPhase(true);
-		 * leftFollowerFront.setSensorPhase(true);
-		 * rightFollowerFront.setSensorPhase(true);
-		 */
-
-		rightFollowerBack.configOpenloopRamp(0, 0);
-		leftFollowerBack.configOpenloopRamp(0, 0);
-		rightFollowerMid.configOpenloopRamp(0, 0);
-		leftFollowerMid.configOpenloopRamp(0, 0);
 
 		rightFollowerBack.set(ControlMode.Follower, rightMaster.getDeviceID());
 		leftFollowerBack.set(ControlMode.Follower, leftMaster.getDeviceID());
@@ -147,44 +130,64 @@ public class DriveTrain extends Subsystem {
 		double rightMotorSpeed;
 		double stickThreshold = 0.01;
 		double powerThreshold = 1.0;
+		double liftThreshold = 4000.0;
 		turnPower = -turnPower;
-		
+
 		leftMotorSpeed = throttle;
 		rightMotorSpeed = throttle;
-		
-		
-		if(turnPower < -stickThreshold){
+
+		if (turnPower < -stickThreshold) {
 			leftMotorSpeed += turnPower;
-			if(Math.abs(throttle) < stickThreshold){
+			if (Math.abs(throttle) < stickThreshold) {
 				rightMotorSpeed -= turnPower;
 			}
-		} else
-		if(turnPower > stickThreshold){
+		} else if (turnPower > stickThreshold) {
 			rightMotorSpeed -= turnPower;
-			if(Math.abs(throttle) < stickThreshold){
+			if (Math.abs(throttle) < stickThreshold) {
 				leftMotorSpeed += turnPower;
 			}
-		} else
-		if(Math.abs(turnPower) < stickThreshold){
-			
-		}
-		
-		if(leftMotorSpeed > powerThreshold){
-			leftMotorSpeed = powerThreshold;
-		} else
-		if(leftMotorSpeed < -powerThreshold){
-			leftMotorSpeed = -powerThreshold;
-		}
-		
-		if(rightMotorSpeed > powerThreshold){
-			rightMotorSpeed = powerThreshold;
-		} else
-		if(rightMotorSpeed < -powerThreshold){
-			rightMotorSpeed = -powerThreshold;
+		} else if (Math.abs(turnPower) < stickThreshold) {
+
 		}
 
-		robotDrive.tankDrive(leftMotorSpeed, rightMotorSpeed);
+		if (leftMotorSpeed > powerThreshold) {
+			leftMotorSpeed = powerThreshold;
+		} else if (leftMotorSpeed < -powerThreshold) {
+			leftMotorSpeed = -powerThreshold;
+		}
+
+		if (rightMotorSpeed > powerThreshold) {
+			rightMotorSpeed = powerThreshold;
+		} else if (rightMotorSpeed < -powerThreshold) {
+			rightMotorSpeed = -powerThreshold;
+		}
 		
+		if(SmartDashboard.getNumber("Lift Encoeder", 0.0) > liftThreshold){
+			leftMotorSpeed = leftMotorSpeed/2;
+			rightMotorSpeed = rightMotorSpeed/2;
+		}
+		
+		if(getSlowDrive()){
+			setSpeedModifier(2.0);
+			
+		} else {
+			setSpeedModifier(1.0);
+		}
+
+		robotDrive.tankDrive(leftMotorSpeed / getSpeedModifier(), rightMotorSpeed / getSpeedModifier());
+		
+		/*
+		 * System.out.println("Amprage right master : " +
+		 * rightMaster.getOutputCurrent() + ", " +
+		 * "Amprage right follower mid : " + rightFollowerMid.getOutputCurrent()
+		 * + ", " + "Amprage right  follower front: " +
+		 * rightFollowerBack.getOutputCurrent()); System.out.println(
+		 * "Amprage left master : " + leftMaster.getOutputCurrent() + ", " +
+		 * "Amprage left follower mid : " + leftFollowerMid.getOutputCurrent() +
+		 * ", " + "Amprage left  follower front: " +
+		 * leftFollowerBack.getOutputCurrent());
+		 */
+
 		// this.setDriveSignal(new DriveSignal(leftMotorSpeed,
 		// rightMotorSpeed));
 	}
@@ -265,7 +268,30 @@ public class DriveTrain extends Subsystem {
 
 	public void DriveTank(double dLeftMag, double dRightMag) {
 		robotDrive.tankDrive(dLeftMag, dRightMag, false);
-		System.out.println("driveMag = " + dLeftMag);
+		/*
+		 * System.out.println("Amprage right master : " +
+		 * rightMaster.getOutputCurrent() + ", " +
+		 * "Amprage right follower mid : " + rightFollowerMid.getOutputCurrent()
+		 * + ", " + "Amprage right  follower front: " +
+		 * rightFollowerBack.getOutputCurrent()); System.out.println(
+		 * "Amprage left master : " + leftMaster.getOutputCurrent() + ", " +
+		 * "Amprage left follower mid : " + leftFollowerMid.getOutputCurrent() +
+		 * ", " + "Amprage left  follower front: " +
+		 * leftFollowerBack.getOutputCurrent()); System.out.println(
+		 * "left volts=" + leftMaster.getMotorOutputVoltage() +
+		 * leftFollowerMid.getMotorOutputVoltage() +
+		 * leftFollowerBack.getMotorOutputVoltage() + " right volts = " +
+		 * rightMaster.getMotorOutputVoltage() +
+		 * rightFollowerMid.getMotorOutputVoltage() +
+		 * rightFollowerBack.getMotorOutputVoltage()); System.out.println(
+		 * "left %" + leftMaster.getMotorOutputPercent() +
+		 * leftFollowerMid.getMotorOutputPercent() +
+		 * leftFollowerBack.getMotorOutputPercent() + " right % = " +
+		 * rightMaster.getMotorOutputPercent() +
+		 * rightFollowerMid.getMotorOutputPercent() +
+		 * rightFollowerBack.getMotorOutputPercent());
+		 */
+
 	}
 
 	public AHRS getAhrs() {
@@ -294,7 +320,7 @@ public class DriveTrain extends Subsystem {
 
 	public void setBrake() {
 		System.out.println("Brake mode on");
-		
+
 		leftMaster.setNeutralMode(NeutralMode.Brake);
 		rightMaster.setNeutralMode(NeutralMode.Brake);
 
@@ -315,7 +341,8 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public double getEncoderPosition() {
-		return ((leftFollowerMid.getSelectedSensorPosition(0) + rightMaster.getSelectedSensorPosition(0)) / 2) / RobotMap.gearRatio;
+		return ((leftFollowerMid.getSelectedSensorPosition(0) + rightMaster.getSelectedSensorPosition(0)) / 2)
+				/ RobotMap.gearRatio;
 	}
 
 	public double getLeftEncoderPosition() {
@@ -334,4 +361,21 @@ public class DriveTrain extends Subsystem {
 	public void setSafetyOff() {
 		robotDrive.setSafetyEnabled(false);
 	}
+	
+	public void setSpeedModifier(double modifier){
+		speedModifier = modifier;
+	}
+	
+	public double getSpeedModifier(){
+		return speedModifier;
+	}
+	
+	public void setSlowDrive(boolean input){
+		slowDrive = input;
+	}
+	
+	public boolean getSlowDrive(){
+		return slowDrive;
+	}
+	
 }

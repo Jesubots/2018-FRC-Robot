@@ -12,31 +12,37 @@ public class MoveWrist extends Command {
 
 	private double power;
 
-	public MoveWrist(double input) {
+	private double timeout;
+	public MoveWrist(double input, double timeInput) {
 		requires(Robot.jaws);
+		setInterruptible(true);
 		power = input;
+		timeout = timeInput;
+		setTimeout(timeout);
 	}
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
-		Robot.jaws.moveWrist(power);
 	}
 
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
+		Robot.jaws.moveWrist(power);
 	}
 
 	// Make this return true when this Command no longer needs to run execute()
 	protected boolean isFinished() {
-		return false;
+		return isTimedOut();
 	}
 
 	// Called once after isFinished returns true
 	protected void end() {
+		Robot.jaws.stopWrist(0);
 	}
 
 	// Called when another command which requires one or more of the same
 	// subsystems is scheduled to run
 	protected void interrupted() {
+		Robot.jaws.stopWrist(0);
 	}
 }
