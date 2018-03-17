@@ -15,14 +15,15 @@ public class DriveStraightTime extends Command {
 		requires(Robot.driveTrain);
 	}
 	
-	public DriveStraightTime(double time){
+	public DriveStraightTime(double time, double magnitude){
 		OI.setDriveTime(time);
+		OI.setDriveMag(magnitude);
 	}
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
 		setInterruptible(true);
-		System.out.println("Driving Straight");
+		System.out.println("Driving Straight, " + OI.getDriveTime() + ", " + OI.getDriveMag());
 		Robot.driveTrain.DriveStraightPIDInit(OI.getDriveMag(), 0.0);
 		setTimeout(OI.getDriveTime());
 	}

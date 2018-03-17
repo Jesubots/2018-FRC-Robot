@@ -37,13 +37,14 @@ public class RobotMap {
 
 	public static int jawRightVictor = 0;
 	public static int jawLeftVictor = 1;
-	public static int wristVictor = 2;
+	public static int wristVictor = 3;
 	public static double openJawsTimeout = 3.0;
 	public static double closeJawsTimeout = 3.0;
 	public static double stopJawsTimeout = .01;
-	public static double defaultGrabJawsPower = .75;
-	public static double defaultSpitJawsPower = 1.0;
-	public static double defaultWristPower = .4;
+	public static double defaultGrabJawsPower = -.75;
+	public static double defaultSpitJawsPower = -1.0;
+	public static double defaultSpitJawsSlowPower = -.6;
+	public static double defaultWristPower = .6;
 
 	public static int leftLiftCAN = 2;
 	public static int rightLiftCAN = 6;
@@ -51,7 +52,8 @@ public class RobotMap {
 	public static int winchRightVictor = 4;
 	public static double defaultLiftTimeout = 5.0;
 	public static double defaultWinchPower = .5;
-	public static double defaultLiftPower = 1.0;
+	public static double defaultLiftPower = .9;
+	public static double defaultLiftDownPower = .75;
 
 	public static double minMotorPower = 0.0;
 	public static double tolerancePercent = 2;
@@ -71,15 +73,17 @@ public class RobotMap {
 
 	public static int compressorPort = 0;
 
+	public static int bumpSwitch = 0;
+
 	public static enum eLiftDistance {
 		kHigh, kLow, kUnknown
 	};
 
 	public class PivotTurnPIDMap {
-		public static final double kP = 0.028;
+		public static final double kP = 0.02;
 		public static final double kI = 0.0;
-		public static final double kD = 0.52;
-		public static final double kF = 0.0;
+		public static final double kD = 0.0;
+		public static final double kF = 0.1;
 		public static final double kToleranceDegrees = 1.0f;
 
 	}
@@ -102,18 +106,14 @@ public class RobotMap {
 
 	public static class EncoderDistanceMap {
 		public static final double kUnknownDistance = 0.0;
-		public static final double kNearDistance = 101034.0;
-		public static final double kMiddleDistance = 207530.0;
-		public static final double kFarDistance = 30000.0;
-		public static final double kNearSide = 27306.0;
-		public static final double kNearSideSeg1 = 27306.0;
-		public static final double kNearSideSeg2 = 27306.0 - 47786.0; // public
-																		// static
-																		// double
-																		// autoDistanceDifference
-																		// =
-																		// 47786.0;
-		public static final double kNearSideSeg3 = 2.0 * 27306.0;
+		public static final double kNearDistance = 32000.0;
+		public static final double kMiddleDistance = 64000.0;
+		public static final double kFarDistance = 64000.0;
+		public static final double kNearSide = 27000.0;
+		public static final double kNearSideSeg1 = 10000.0;
+		public static final double kNearSideSeg2 = 15000.0;
+		public static final double kNearSideSeg3 = 20000.0;
+		protected static double kNearSideSeg4 = 18000.0;
 	}
 	
 	public class SolenoidMap {

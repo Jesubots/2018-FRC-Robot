@@ -161,20 +161,10 @@ public class DriveTrain extends Subsystem {
 		} else if (rightMotorSpeed < -powerThreshold) {
 			rightMotorSpeed = -powerThreshold;
 		}
-		
-		if(SmartDashboard.getNumber("Lift Encoeder", 0.0) > liftThreshold){
-			leftMotorSpeed = leftMotorSpeed/2;
-			rightMotorSpeed = rightMotorSpeed/2;
-		}
-		
-		if(getSlowDrive()){
-			setSpeedModifier(2.0);
-			
-		} else {
-			setSpeedModifier(1.0);
-		}
 
-		robotDrive.tankDrive(leftMotorSpeed / getSpeedModifier(), rightMotorSpeed / getSpeedModifier());
+		robotDrive.tankDrive(leftMotorSpeed, rightMotorSpeed);
+		
+		//System.out.println("Left Motors : " + leftMotorSpeed + ", Right Motors : " + rightMotorSpeed); 
 		
 		/*
 		 * System.out.println("Amprage right master : " +
@@ -237,6 +227,7 @@ public class DriveTrain extends Subsystem {
 		pivotTurnPID.getPIDController().reset();
 		f_magnitude = dMag;
 		pivotTurnPID.setSetpoint(-targetDegree);
+		pivotTurnPID.setOutputRange(-dMag, dMag);// maximun motor power
 		setCoast();
 		pivotTurnPID.setAbsoluteTolerance(0.25);
 		pivotTurnPID.enable();
@@ -341,7 +332,7 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public double getEncoderPosition() {
-		return ((leftFollowerMid.getSelectedSensorPosition(0) + rightMaster.getSelectedSensorPosition(0)) / 2)
+		return ((leftFollowerMid.getSelectedSensorPosition(0) + (-rightMaster.getSelectedSensorPosition(0))) / 2)
 				/ RobotMap.gearRatio;
 	}
 

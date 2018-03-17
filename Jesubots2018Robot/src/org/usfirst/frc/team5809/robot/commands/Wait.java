@@ -1,35 +1,30 @@
 package org.usfirst.frc.team5809.robot.commands;
 
-import org.usfirst.frc.team5809.robot.Robot;
-
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
  *
  */
-public class SlowDrive extends Command {
+public class Wait extends Command {
 
-    public SlowDrive() {
-        requires(Robot.driveTrain);
+	private double timeout;
+    public Wait(double input) {
+        timeout = input;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	if(Robot.driveTrain.getSlowDrive()){
-    		Robot.driveTrain.setSlowDrive(false);
-    	} else {
-    		Robot.driveTrain.setSlowDrive(true);
-    	}
-    	
+    	setTimeout(timeout);
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+    	
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return isTimedOut();
     }
 
     // Called once after isFinished returns true

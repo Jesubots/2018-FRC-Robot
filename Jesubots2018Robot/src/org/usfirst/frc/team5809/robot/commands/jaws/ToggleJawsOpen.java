@@ -1,6 +1,6 @@
 package org.usfirst.frc.team5809.robot.commands.jaws;
 
-import org.usfirst.frc.team5809.robot.OI;
+//import org.usfirst.frc.team5809.robot.OI;
 import org.usfirst.frc.team5809.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.Command;
@@ -10,11 +10,11 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class ToggleJawsOpen extends Command {
 
-	private boolean jawsOpen;
+	//private boolean jawsOpen;
 	public ToggleJawsOpen() {
 		requires(Robot.pneumatics);
 		
-		jawsOpen = OI.getJawsOpen();
+		//jawsOpen = OI.getJawsOpen();
 	}
 
 	// Called just before this Command runs the first time

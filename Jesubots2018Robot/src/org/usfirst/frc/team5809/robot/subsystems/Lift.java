@@ -7,8 +7,8 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.wpilibj.VictorSP;
-//import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Counter;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
@@ -33,20 +33,21 @@ public class Lift extends Subsystem {
 
 	public WPI_TalonSRX leftLift = new WPI_TalonSRX(RobotMap.leftLiftCAN);
 	public WPI_TalonSRX rightLift = new WPI_TalonSRX(RobotMap.rightLiftCAN);
-
-	// public VictorSP winchLeft = new VictorSP(RobotMap.winchLeftVictor);
-	// public VictorSP winchRight = new VictorSP(RobotMap.winchRightVictor);
-
 	public DifferentialDrive liftDrive = new DifferentialDrive(leftLift, rightLift);
-	// public DifferentialDrive winchDrive = new DifferentialDrive(winchLeft,
-	// winchRight);
+	
+	public DigitalInput limitSwitch = new DigitalInput(RobotMap.bumpSwitch);
+	public Counter bumpSwitch = new Counter(limitSwitch);
+	
+	private boolean switchOn;
+	private boolean downAllowed = true;
 
 	public Lift() {
 		height = OI.getLiftDistance();
-
-		// winchDrive.setSafetyEnabled(false);
+		
+		
+		switchOn = bumpSwitch.get() > 0;
 		liftDrive.setSafetyEnabled(false);
-		rightLift.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+		leftLift.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
 		leftLift.setSensorPhase(true);
 		leftLift.setNeutralMode(NeutralMode.Brake);
 		rightLift.setNeutralMode(NeutralMode.Brake);
@@ -54,10 +55,27 @@ public class Lift extends Subsystem {
 
 	public void initDefaultCommand() {
 	}
-
+	
+	public void setDownAllowed(boolean allowed){
+		downAllowed = allowed;
+	}
+	
+	public boolean getDownAllowed(){
+		return downAllowed;
+	}
+	
+	public boolean getSwitchOn(){
+		switchOn = bumpSwitch.get() > 0;
+		return switchOn;
+	}
+	
+	public void resetBumpSwitch(){
+		bumpSwitch.reset();
+	}
+	
 	public void moveLift(double power) {
 		liftDrive.tankDrive(power, -power);
-		System.out.println(power);
+		//System.out.println(leftLift.getMotorOutputVoltage() + " :: " + rightLift.getMotorOutputVoltage());
 	}
 
 	public void stopLift() {
@@ -69,7 +87,7 @@ public class Lift extends Subsystem {
 	}
 
 	public void resetEncoders() {
-		rightLift.setSelectedSensorPosition(0, 0, 0);
+		leftLift.setSelectedSensorPosition(0, 0, 0);
 	}
 
 	/*

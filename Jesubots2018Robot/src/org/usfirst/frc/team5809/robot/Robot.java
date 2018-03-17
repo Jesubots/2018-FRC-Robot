@@ -13,6 +13,7 @@ import org.usfirst.frc.team5809.robot.commands.PID.DriveStraightEncoders;
 import org.usfirst.frc.team5809.robot.commands.PID.DriveStraightTime;
 import org.usfirst.frc.team5809.robot.commands.PID.PivotTurn;
 import org.usfirst.frc.team5809.robot.commands.auto.DestinationAuto;
+import org.usfirst.frc.team5809.robot.commands.lift.LiftUp;
 import org.usfirst.frc.team5809.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team5809.robot.subsystems.Jaws;
 import org.usfirst.frc.team5809.robot.subsystems.Lift;
@@ -42,7 +43,6 @@ public class Robot extends TimedRobot {
 
 	// public static final driveTrain kDriveTrain = new DriveTrain();
 	public static OI m_oi = null;
-	
 
 	Command m_autonomousCommand;
 	SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -58,6 +58,7 @@ public class Robot extends TimedRobot {
 		jaws = Jaws.getInstance();
 		lift = Lift.getInstance();
 		pneumatics = Pneumatics.getInstance();
+		driveTrain.setSafetyOff();
 		// OI.setSide(1);
 		// OI.setAutoInfo(OI.getSide());
 
@@ -77,7 +78,7 @@ public class Robot extends TimedRobot {
 				m_position_chooser.addDefault(display, s);
 
 			} else {
-				
+
 				m_position_chooser.addObject(display, s);
 			}
 
@@ -89,7 +90,8 @@ public class Robot extends TimedRobot {
 		m_chooser.addObject("Drive Straight Distance", new DriveStraightDistance());
 		m_chooser.addObject("Drive Straight Encoders", new DriveStraightEncoders());
 		m_chooser.addObject("Pivot Turn", new PivotTurn());
-		m_chooser.addObject("Destination Auto", new DestinationAuto());
+		m_chooser.addObject("DestinationAuto", new DestinationAuto());
+		m_chooser.addObject("Lift Auto", new LiftUp(1.5));
 		SmartDashboard.putData("Auto mode", m_chooser);
 		// SmartDashboard.putNumber("Encoder Position",
 		// driveTrain.getEncoderPosition());
@@ -100,21 +102,17 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putNumber("DriveMag", RobotMap.defaultDriveMag);
 		SmartDashboard.putNumber("Pivot Turn Degrees", RobotMap.defaultPivotTurn);
 		SmartDashboard.putNumber("TEMP AUTO SIDE", 1.0);
-		
-		
+
 		CameraServer camServer = CameraServer.getInstance();
-        UsbCamera cam0 = null,cam1 = null;
-        camServer.addServer("cam0");
-        if (camServer != null){
-        	cam0 = camServer.startAutomaticCapture();
-        	if (cam0.isConnected()) {
-        		cam0.setResolution(320, 160);
-        		cam0.setFPS(20);
-        	
-        	}
-        }
-		 
-		
+		UsbCamera cam0 = null;
+		camServer.addServer("cam0");
+		if (camServer != null) {
+			cam0 = camServer.startAutomaticCapture();
+			if (cam0.isConnected()) {
+				cam0.setResolution(320, 160);
+				cam0.setFPS(20);
+			}
+		}
 
 		m_oi = new OI();
 	}
@@ -126,7 +124,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void disabledInit() {
-		pneumatics.closeJaws();
 		OI.setJawsOpen(false);
 	}
 
@@ -140,25 +137,35 @@ public class Robot extends TimedRobot {
 		m_autonomousCommand = m_chooser.getSelected();
 		OI.setSide(SmartDashboard.getNumber("Side", 1.0));
 
-		// m_oi.setAutoInfo(m_oi.getSide());
-		OI.setAutoInfo(m_position_chooser.getSelected());
-
-		System.out.println("Selected auto command = " + m_autonomousCommand.toString());
-		if (m_autonomousCommand.toString().contentEquals("DestinationAuto")) {
-			m_autonomousCommand = new DestinationAuto();
-		}
-
-		driveTrain.setSafetyOff();
-		driveTrain.resetEncoders();
-
+		System.out.println("Start Auto Init");
 		OI.setDriveTime(SmartDashboard.getNumber("Drive Straight Time", 0.0));
 		OI.setEncoderPosition(SmartDashboard.getNumber("Drive Straight Distance", 0.0));
 		OI.setDriveMag(SmartDashboard.getNumber("DriveMag", 0.0));
 		OI.setPivotTurnDegree(SmartDashboard.getNumber("Pivot Turn Degrees", 0.0));
 
-		// schedule the autonomous command (example)
+		// m_oi.setAutoInfo(m_oi.getSide());
+		System.out.println("Ask command null");
+
 		if (m_autonomousCommand != null) {
+			System.out.println("Selected auto command = " + m_autonomousCommand.toString());
+
+			System.out.flush();
+
+			OI.setAutoInfo(m_position_chooser.getSelected());
+
+			if (m_autonomousCommand.toString().contentEquals("DestinationAuto")) {
+				System.out.println("Rebuild Auto");
+				m_autonomousCommand = new DestinationAuto();
+			}
+
+			driveTrain.getAhrs().zeroYaw();
+			driveTrain.resetEncoders();
+
+			// schedule the autonomous command (example)
+			// if (m_autonomousCommand != null) {
 			m_autonomousCommand.start();
+		} else {
+			System.out.println("Auto command is null");
 		}
 	}
 
@@ -167,6 +174,36 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+
+		if (OI.getGameState().length() < 2) {
+			if (m_autonomousCommand != null) {
+				
+				System.out.println("Missed gameData");
+				
+				Scheduler.getInstance().removeAll();
+				
+				System.out.println("Selected auto command = " + m_autonomousCommand.toString());
+
+				System.out.flush();
+
+				OI.setAutoInfo(m_position_chooser.getSelected());
+
+				if (m_autonomousCommand.toString().contentEquals("DestinationAuto")) {
+					System.out.println("Rebuild Auto");
+					m_autonomousCommand = new DestinationAuto();
+				}
+
+				driveTrain.getAhrs().zeroYaw();
+				driveTrain.resetEncoders();
+
+				// schedule the autonomous command (example)
+				// if (m_autonomousCommand != null) {
+				m_autonomousCommand.start();
+			} else {
+				System.out.println("Auto command is null");
+			}
+		}
+
 		Scheduler.getInstance().run();
 	}
 

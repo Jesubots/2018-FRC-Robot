@@ -10,21 +10,22 @@ package org.usfirst.frc.team5809.robot;
 import org.usfirst.frc.team5809.lib.drivers.JesubotsButton;
 import org.usfirst.frc.team5809.lib.drivers.JesubotsButton.LogitechButton;
 import org.usfirst.frc.team5809.robot.commands.jaws.SpitJaws;
+import org.usfirst.frc.team5809.robot.commands.jaws.SpitJawsSlow;
 import org.usfirst.frc.team5809.robot.commands.jaws.StopJaws;
 import org.usfirst.frc.team5809.robot.commands.jaws.StopWrist;
 import org.usfirst.frc.team5809.robot.commands.jaws.ToggleJawsClose;
 import org.usfirst.frc.team5809.robot.commands.jaws.ToggleJawsOpen;
-import org.usfirst.frc.team5809.robot.commands.lift.ManualLift;
-import org.usfirst.frc.team5809.robot.commands.lift.StartWinch;
+import org.usfirst.frc.team5809.robot.commands.lift.ManualLiftDown;
+import org.usfirst.frc.team5809.robot.commands.lift.ManualLiftUp;
 import org.usfirst.frc.team5809.robot.RobotMap.StartPosition;
 import org.usfirst.frc.team5809.robot.RobotMap.eLiftDistance;
-import org.usfirst.frc.team5809.robot.commands.SlowDrive;
 import org.usfirst.frc.team5809.robot.commands.jaws.GrabJaws;
 import org.usfirst.frc.team5809.robot.commands.jaws.MoveWrist;
 import org.usfirst.frc.team5809.robot.commands.jaws.OppositeJaws;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -38,33 +39,15 @@ public class OI {
 
 	public static final Joystick driverStick = new Joystick(0);
 	public static final Joystick operatorStick = new Joystick(1);
-
-	
-	/***************BUTTON LAYOUT**************\
-	 * DRIVER : 
-	 * Arcade Drive : Left Stick forward/backward, Right Stick Pivot Turn Left/Right
-	 * Winch : Hold X
-	 * 
-	 * OPERATOR : 
-	 * Jaws : Grab with 'A', Spit Out with 'B', Toggle Open/Close with X, Toggle Grip with Y, Wrist up/down with left/right bumpers, spin opposite with START
-	 * Lift : up/down with left/right triggers
-	 * RESET WITH BACK/SELECT BUTTON
-	 * 
-	 /*****************************************\
-	 */
-	//winch -- X
-	
-	public static JesubotsButton slowDriveButton = new JesubotsButton(OI.driverStick, LogitechButton.A);
 	// jaw buttons
-	public static JesubotsButton grabJawsButton = new JesubotsButton(OI.operatorStick, LogitechButton.A);
-	public static JesubotsButton spitJawsButton = new JesubotsButton(OI.operatorStick, LogitechButton.B);
-	public static JesubotsButton toggleJawsOpenButton = new JesubotsButton(OI.operatorStick, LogitechButton.X);
-	public static JesubotsButton toggleJawsCloseButton = new JesubotsButton(OI.operatorStick, LogitechButton.Y);
+	public static JesubotsButton grabJawsButton = new JesubotsButton(OI.operatorStick, LogitechButton.B);
+	public static JesubotsButton spitJawsButton = new JesubotsButton(OI.operatorStick, LogitechButton.A);
+	public static JesubotsButton toggleJawsOpenButton = new JesubotsButton(OI.operatorStick, LogitechButton.Y);
+	public static JesubotsButton toggleJawsCloseButton = new JesubotsButton(OI.operatorStick, LogitechButton.X);
 	public static JesubotsButton wristUpButton = new JesubotsButton(OI.operatorStick, LogitechButton.BumperLeft);
 	public static JesubotsButton wristDownButton = new JesubotsButton(OI.operatorStick, LogitechButton.TriggerLeft);
 	public static JesubotsButton oppositeJawsButton = new JesubotsButton(OI.operatorStick, LogitechButton.Start);
-	//other
-	public static JesubotsButton resetButton = new JesubotsButton(OI.operatorStick, LogitechButton.Back);
+	public static JesubotsButton spitJawsSlowButton = new JesubotsButton(OI.operatorStick, LogitechButton.Back);
 	// lift buttons
 	public static JesubotsButton raiseLiftButton = new JesubotsButton(OI.operatorStick, LogitechButton.BumperRight);
 	public static JesubotsButton lowerLiftButton = new JesubotsButton(OI.operatorStick, LogitechButton.TriggerRight);
@@ -160,6 +143,50 @@ public class OI {
 			nearSideOfSwitch = new Destination();
 		}
 
+		// SWITCH PREFERENCE
+
+		if (eStartPosition == StartPosition.LEFT) {
+			if (scale.getFieldSide() == Destination.eFieldSide.kLeft) {
+				setDestination(scale);
+				setLiftDistance(eLiftDistance.kLow);
+
+			} else if (nearSwitch.getFieldSide() == Destination.eFieldSide.kLeft) {
+				setDestination(nearSwitch);
+				setLiftDistance(eLiftDistance.kHigh);
+			} else {
+				setDestination(defaultSwitch);
+				setLiftDistance(eLiftDistance.kUnknown);
+			}
+		} else if (eStartPosition == StartPosition.RIGHT) {
+			if (scale.getFieldSide() == Destination.eFieldSide.kRight) {
+				setDestination(scale);
+				setLiftDistance(eLiftDistance.kLow);
+			} else if (nearSwitch.getFieldSide() == Destination.eFieldSide.kRight) {
+				setDestination(nearSwitch);
+				setLiftDistance(eLiftDistance.kHigh);
+			} else {
+				setDestination(defaultSwitch);
+				setLiftDistance(eLiftDistance.kUnknown);
+			}
+		} else if (eStartPosition == StartPosition.MIDDLE) {
+			if (nearSwitch.getFieldSide() == Destination.eFieldSide.kRight) {
+				setDestination(nearSideOfSwitch);
+				setLiftDistance(eLiftDistance.kHigh);
+			} else if (nearSwitch.getFieldSide() == Destination.eFieldSide.kLeft) {
+				setDestination(nearSideOfSwitch);
+				setLiftDistance(eLiftDistance.kHigh);
+			} else {
+				setDestination(defaultSwitch);
+				setLiftDistance(eLiftDistance.kUnknown);
+			}
+		} else {
+			setDestination(defaultSwitch);
+			setLiftDistance(eLiftDistance.kUnknown);
+		}
+
+		// SCALE PREFERENCE
+		/*
+		
 		if (eStartPosition == StartPosition.LEFT) {
 			if (nearSwitch.getFieldSide() == Destination.eFieldSide.kLeft) {
 				setDestination(nearSwitch);
@@ -197,11 +224,15 @@ public class OI {
 			setDestination(defaultSwitch);
 			setLiftDistance(eLiftDistance.kUnknown);
 		}
+		
+		*/
 
 		SmartDashboard.putString("DestinationAuto Info", SmartDashboard.getString("DestinationAuto Info", "")
 				+ "startPosition = " + startPosition + "  Destination = " + getDestination().toString());
 		System.out.println(
 				"SetAutoInfo startPosition = " + startPosition + "  Destination = " + getDestination().toString());
+
+		return;
 	}
 
 	public static void setDestination(Destination destination) {
@@ -235,11 +266,10 @@ public class OI {
 	public static void setJawsOpen(boolean input) {
 		OI.jawsOpen = input;
 	}
-	
-	public static boolean getJawsOpen(){
-    	return OI.jawsOpen;
-    }
 
+	public static boolean getJawsOpen() {
+		return OI.jawsOpen;
+	}
 
 	public static String getGameState() {
 		String gameData;
@@ -250,16 +280,14 @@ public class OI {
 	public void initButtons() {
 		OI.grabJawsButton.whileHeld(new GrabJaws());
 		OI.spitJawsButton.whileHeld(new SpitJaws());
-		OI.raiseLiftButton.whileHeld(new ManualLift(RobotMap.defaultLiftPower));
-		OI.lowerLiftButton.whileHeld(new ManualLift(-RobotMap.defaultLiftPower));
+		OI.spitJawsSlowButton.whileHeld(new SpitJawsSlow());
+		OI.raiseLiftButton.whileHeld(new ManualLiftUp(-RobotMap.defaultLiftPower));
+		OI.lowerLiftButton.whileHeld(new ManualLiftDown(-RobotMap.defaultLiftPower));
 		OI.wristDownButton.whileHeld(new MoveWrist(RobotMap.defaultWristPower, .01));
 		OI.wristUpButton.whileHeld(new MoveWrist(-RobotMap.defaultWristPower, 0.01));
 		OI.oppositeJawsButton.whileHeld(new OppositeJaws());
 		OI.toggleJawsOpenButton.whenPressed(new ToggleJawsOpen());
 		OI.toggleJawsCloseButton.whenPressed(new ToggleJawsClose());
-		OI.slowDriveButton.whenPressed(new SlowDrive());
-
-		//OI.winchButton.whileHeld(new StartWinch());
 
 		OI.wristUpButton.whenReleased(new StopWrist());
 		OI.wristUpButton.whenReleased(new StopWrist());

@@ -7,10 +7,10 @@ public class Destination {
 	};
 
 	public static enum eFieldDistance {
-		kNearSide, kNear, kMiddle, kFar, kUnknown, 
-	};	
-	
-	public static enum NearSideDestination  {
+		kNearSide, kNear, kMiddle, kFar, kUnknown,
+	};
+
+	public static enum NearSideDestination {
 		DRIVE_SEG1 {
 			@Override
 			public double getDriveData() {
@@ -20,25 +20,28 @@ public class Destination {
 		DRIVE_TURN1 {
 			@Override
 			public double getDriveData() {
-				if (OI.getDestination().getFieldSide() ==  Destination.eFieldSide.kLeft)
-					return 90.0;  //turn left
+				if (OI.getDestination().getFieldSide() == Destination.eFieldSide.kLeft)
+					return 90.0; // turn left
 				else
-					return -90.0;  // turn right
+					return -90.0; // turn right
 			}
 		},
 		DRIVE_SEG2 {
 			@Override
 			public double getDriveData() {
-				return RobotMap.EncoderDistanceMap.kNearSideSeg2;
+				if (OI.getDestination().getFieldSide() == Destination.eFieldSide.kLeft)
+					return RobotMap.EncoderDistanceMap.kNearSideSeg4;
+				else
+					return RobotMap.EncoderDistanceMap.kNearSideSeg2;
 			}
 		},
 		DRIVE_TURN2 {
 			@Override
 			public double getDriveData() {
-				if (OI.getDestination().getFieldSide() ==  Destination.eFieldSide.kLeft)
-					return -90.0;  // turn right
+				if (OI.getDestination().getFieldSide() == Destination.eFieldSide.kLeft)
+					return -90.0; // turn right
 				else
-					return 90.0;   // turn left
+					return 90.0; // turn left
 			}
 		},
 		DRIVE_SEG3 {
