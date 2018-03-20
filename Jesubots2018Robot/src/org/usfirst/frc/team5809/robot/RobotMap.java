@@ -43,7 +43,7 @@ public class RobotMap {
 	public static double stopJawsTimeout = .01;
 	public static double defaultGrabJawsPower = -.75;
 	public static double defaultSpitJawsPower = -1.0;
-	public static double defaultSpitJawsSlowPower = -.6;
+	public static double defaultSpitJawsSlowPower = -.75;
 	public static double defaultWristPower = .6;
 
 	public static int leftLiftCAN = 2;
@@ -53,7 +53,7 @@ public class RobotMap {
 	public static double defaultLiftTimeout = 5.0;
 	public static double defaultWinchPower = .5;
 	public static double defaultLiftPower = .9;
-	public static double defaultLiftDownPower = .75;
+	public static double defaultLiftDownPower = .85;
 
 	public static double minMotorPower = 0.0;
 	public static double tolerancePercent = 2;
@@ -114,6 +114,9 @@ public class RobotMap {
 		public static final double kNearSideSeg2 = 15000.0;
 		public static final double kNearSideSeg3 = 20000.0;
 		protected static double kNearSideSeg4 = 18000.0;
+		protected static double kFarScaleSeg1 = 46000.0;
+		protected static double kFarScaleSeg2 = 50000.0;
+		protected static double kFarScaleSeg3 = 16000.0;
 	}
 	
 	public class SolenoidMap {
@@ -137,6 +140,16 @@ public class RobotMap {
 
 		public static String[] names() {
 			String valueStr = Arrays.toString(StartPosition.values());
+			return valueStr.substring(1, valueStr.length() - 1).replace(" ", "").split(",");
+
+		}
+	}
+	
+	public enum TargetPreference {
+		SWITCH, SCALE, NONE;
+
+		public static String[] names() {
+			String valueStr = Arrays.toString(TargetPreference.values());
 			return valueStr.substring(1, valueStr.length() - 1).replace(" ", "").split(",");
 
 		}

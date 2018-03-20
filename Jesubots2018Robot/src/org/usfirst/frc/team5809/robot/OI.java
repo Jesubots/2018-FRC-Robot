@@ -18,6 +18,7 @@ import org.usfirst.frc.team5809.robot.commands.jaws.ToggleJawsOpen;
 import org.usfirst.frc.team5809.robot.commands.lift.ManualLiftDown;
 import org.usfirst.frc.team5809.robot.commands.lift.ManualLiftUp;
 import org.usfirst.frc.team5809.robot.RobotMap.StartPosition;
+import org.usfirst.frc.team5809.robot.RobotMap.TargetPreference;
 import org.usfirst.frc.team5809.robot.RobotMap.eLiftDistance;
 import org.usfirst.frc.team5809.robot.commands.jaws.GrabJaws;
 import org.usfirst.frc.team5809.robot.commands.jaws.MoveWrist;
@@ -63,8 +64,10 @@ public class OI {
 	private static boolean jawsOpen = false;
 	private static StartPosition startPosition;
 	private static eLiftDistance liftHeight = eLiftDistance.kUnknown;
+	private static TargetPreference targetPreference = TargetPreference.NONE;
 	private static Destination destination = new Destination();
 	public static Destination nearSwitch;
+	public static Destination farScale;
 	public static Destination scale;
 	public static Destination farSwitch;
 	public static Destination nearSideOfSwitch;
@@ -114,8 +117,8 @@ public class OI {
 		OI.driveTime = driveTime;
 	}
 
-	public void getPOVDirection() {
-
+	public static void setTargetPreference(String target) {
+		OI.targetPreference = TargetPreference.valueOf(target);
 	}
 
 	public static void setAutoInfo(String startPosition) {
@@ -133,6 +136,7 @@ public class OI {
 			scale = new Destination(gameData.charAt(1), Destination.eFieldDistance.kMiddle);
 			farSwitch = new Destination(gameData.charAt(2), Destination.eFieldDistance.kFar);
 			nearSideOfSwitch = new Destination(gameData.charAt(0), Destination.eFieldDistance.kNearSide);
+			farScale = new Destination(gameData.charAt(1), Destination.eFieldDistance.kFarScale);
 
 		} else {
 			// what if gameData does not exist? = default destinations to
@@ -143,38 +147,97 @@ public class OI {
 			nearSideOfSwitch = new Destination();
 		}
 
-		// SWITCH PREFERENCE
+		if (OI.targetPreference == TargetPreference.NONE) {
+			setDestination(defaultSwitch);
+			setLiftDistance(eLiftDistance.kUnknown);
+		} else if (OI.targetPreference == TargetPreference.SWITCH) {
+			// SWITCH PREFERENCE
 
-		if (eStartPosition == StartPosition.LEFT) {
-			if (scale.getFieldSide() == Destination.eFieldSide.kLeft) {
-				setDestination(scale);
-				setLiftDistance(eLiftDistance.kLow);
-
-			} else if (nearSwitch.getFieldSide() == Destination.eFieldSide.kLeft) {
-				setDestination(nearSwitch);
-				setLiftDistance(eLiftDistance.kHigh);
+			if (eStartPosition == StartPosition.LEFT) {
+				if (nearSwitch.getFieldSide() == Destination.eFieldSide.kLeft) {
+					setDestination(nearSwitch);
+					setLiftDistance(eLiftDistance.kHigh);
+				} else if (scale.getFieldSide() == Destination.eFieldSide.kLeft) {
+					setDestination(scale);
+					setLiftDistance(eLiftDistance.kLow);
+				} else if (scale.getFieldSide() == Destination.eFieldSide.kRight) {
+					setDestination(farScale);
+					setLiftDistance(eLiftDistance.kHigh);
+				} else {
+					setDestination(defaultSwitch);
+					setLiftDistance(eLiftDistance.kUnknown);
+				}
+			} else if (eStartPosition == StartPosition.RIGHT) {
+				if (nearSwitch.getFieldSide() == Destination.eFieldSide.kRight) {
+					setDestination(nearSwitch);
+					setLiftDistance(eLiftDistance.kHigh);
+				} else if (scale.getFieldSide() == Destination.eFieldSide.kRight) {
+					setDestination(scale);
+					setLiftDistance(eLiftDistance.kLow);
+				} else if (scale.getFieldSide() == Destination.eFieldSide.kLeft) {
+					setDestination(farScale);
+					setLiftDistance(eLiftDistance.kHigh);
+				} else {
+					setDestination(defaultSwitch);
+					setLiftDistance(eLiftDistance.kUnknown);
+				}
+			} else if (eStartPosition == StartPosition.MIDDLE) {
+				if (nearSwitch.getFieldSide() == Destination.eFieldSide.kRight) {
+					setDestination(nearSideOfSwitch);
+					setLiftDistance(eLiftDistance.kHigh);
+				} else if (nearSwitch.getFieldSide() == Destination.eFieldSide.kLeft) {
+					setDestination(nearSideOfSwitch);
+					setLiftDistance(eLiftDistance.kHigh);
+				} else {
+					setDestination(defaultSwitch);
+					setLiftDistance(eLiftDistance.kUnknown);
+				}
 			} else {
 				setDestination(defaultSwitch);
 				setLiftDistance(eLiftDistance.kUnknown);
 			}
-		} else if (eStartPosition == StartPosition.RIGHT) {
-			if (scale.getFieldSide() == Destination.eFieldSide.kRight) {
-				setDestination(scale);
-				setLiftDistance(eLiftDistance.kLow);
-			} else if (nearSwitch.getFieldSide() == Destination.eFieldSide.kRight) {
-				setDestination(nearSwitch);
-				setLiftDistance(eLiftDistance.kHigh);
-			} else {
-				setDestination(defaultSwitch);
-				setLiftDistance(eLiftDistance.kUnknown);
-			}
-		} else if (eStartPosition == StartPosition.MIDDLE) {
-			if (nearSwitch.getFieldSide() == Destination.eFieldSide.kRight) {
-				setDestination(nearSideOfSwitch);
-				setLiftDistance(eLiftDistance.kHigh);
-			} else if (nearSwitch.getFieldSide() == Destination.eFieldSide.kLeft) {
-				setDestination(nearSideOfSwitch);
-				setLiftDistance(eLiftDistance.kHigh);
+		} else if (OI.targetPreference == TargetPreference.SCALE) {
+			// SCALE PREFERENCE
+
+			if (eStartPosition == StartPosition.LEFT) {
+				if (scale.getFieldSide() == Destination.eFieldSide.kLeft) {
+					setDestination(scale);
+					setLiftDistance(eLiftDistance.kLow);
+				} else if (scale.getFieldSide() == Destination.eFieldSide.kRight) {
+					setDestination(farScale);
+					setLiftDistance(eLiftDistance.kHigh);
+				} else if (nearSwitch.getFieldSide() == Destination.eFieldSide.kLeft) {
+					setDestination(nearSwitch);
+					setLiftDistance(eLiftDistance.kHigh);
+				} else {
+					setDestination(defaultSwitch);
+					setLiftDistance(eLiftDistance.kUnknown);
+				}
+			} else if (eStartPosition == StartPosition.RIGHT) {
+				if (scale.getFieldSide() == Destination.eFieldSide.kRight) {
+					setDestination(scale);
+					setLiftDistance(eLiftDistance.kLow);
+				} else if (scale.getFieldSide() == Destination.eFieldSide.kLeft) {
+					setDestination(farScale);
+					setLiftDistance(eLiftDistance.kHigh);
+				} else if (nearSwitch.getFieldSide() == Destination.eFieldSide.kRight) {
+					setDestination(nearSwitch);
+					setLiftDistance(eLiftDistance.kHigh);
+				} else {
+					setDestination(defaultSwitch);
+					setLiftDistance(eLiftDistance.kUnknown);
+				}
+			} else if (eStartPosition == StartPosition.MIDDLE) {
+				if (nearSwitch.getFieldSide() == Destination.eFieldSide.kRight) {
+					setDestination(nearSideOfSwitch);
+					setLiftDistance(eLiftDistance.kHigh);
+				} else if (nearSwitch.getFieldSide() == Destination.eFieldSide.kLeft) {
+					setDestination(nearSideOfSwitch);
+					setLiftDistance(eLiftDistance.kHigh);
+				} else {
+					setDestination(defaultSwitch);
+					setLiftDistance(eLiftDistance.kUnknown);
+				}
 			} else {
 				setDestination(defaultSwitch);
 				setLiftDistance(eLiftDistance.kUnknown);
@@ -184,53 +247,11 @@ public class OI {
 			setLiftDistance(eLiftDistance.kUnknown);
 		}
 
-		// SCALE PREFERENCE
-		/*
-		
-		if (eStartPosition == StartPosition.LEFT) {
-			if (nearSwitch.getFieldSide() == Destination.eFieldSide.kLeft) {
-				setDestination(nearSwitch);
-				setLiftDistance(eLiftDistance.kHigh);
-			} else if (scale.getFieldSide() == Destination.eFieldSide.kLeft) {
-				setDestination(scale);
-				setLiftDistance(eLiftDistance.kLow);
-			} else {
-				setDestination(defaultSwitch);
-				setLiftDistance(eLiftDistance.kUnknown);
-			}
-		} else if (eStartPosition == StartPosition.RIGHT) {
-			if (nearSwitch.getFieldSide() == Destination.eFieldSide.kRight) {
-				setDestination(nearSwitch);
-				setLiftDistance(eLiftDistance.kHigh);
-			} else if (scale.getFieldSide() == Destination.eFieldSide.kRight) {
-				setDestination(scale);
-				setLiftDistance(eLiftDistance.kLow);
-			} else {
-				setDestination(defaultSwitch);
-				setLiftDistance(eLiftDistance.kUnknown);
-			}
-		} else if (eStartPosition == StartPosition.MIDDLE) {
-			if (nearSwitch.getFieldSide() == Destination.eFieldSide.kRight) {
-				setDestination(nearSideOfSwitch);
-				setLiftDistance(eLiftDistance.kHigh);
-			} else if (nearSwitch.getFieldSide() == Destination.eFieldSide.kLeft) {
-				setDestination(nearSideOfSwitch);
-				setLiftDistance(eLiftDistance.kHigh);
-			} else {
-				setDestination(defaultSwitch);
-				setLiftDistance(eLiftDistance.kUnknown);
-			}
-		} else {
-			setDestination(defaultSwitch);
-			setLiftDistance(eLiftDistance.kUnknown);
-		}
-		
-		*/
-
-		SmartDashboard.putString("DestinationAuto Info", SmartDashboard.getString("DestinationAuto Info", "")
-				+ "startPosition = " + startPosition + "  Destination = " + getDestination().toString());
-		System.out.println(
-				"SetAutoInfo startPosition = " + startPosition + "  Destination = " + getDestination().toString());
+		SmartDashboard.putString("DestinationAuto Info",
+				SmartDashboard.getString("DestinationAuto Info", "") + "startPosition = " + startPosition
+						+ "  Destination = " + getDestination().toString() + "targetPreference = " + targetPreference);
+		System.out.println("SetAutoInfo startPosition = " + startPosition + "  Destination = "
+				+ getDestination().toString() + "targetPreference = " + targetPreference);
 
 		return;
 	}

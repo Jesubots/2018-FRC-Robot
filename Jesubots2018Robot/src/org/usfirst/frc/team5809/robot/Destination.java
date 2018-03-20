@@ -1,5 +1,7 @@
 package org.usfirst.frc.team5809.robot;
 
+import org.usfirst.frc.team5809.robot.RobotMap.StartPosition;
+
 public class Destination {
 
 	public static enum eFieldSide {
@@ -7,7 +9,7 @@ public class Destination {
 	};
 
 	public static enum eFieldDistance {
-		kNearSide, kNear, kMiddle, kFar, kUnknown,
+		kNearSide, kNear, kMiddle, kFar, kUnknown, kFarScale
 	};
 
 	public static enum NearSideDestination {
@@ -48,6 +50,47 @@ public class Destination {
 			@Override
 			public double getDriveData() {
 				return RobotMap.EncoderDistanceMap.kNearSideSeg3;
+			}
+		};
+
+		public abstract double getDriveData();
+	}
+	
+	public static enum FarScaleDestination {
+		DRIVE_SEG1 {
+			@Override
+			public double getDriveData() {
+				return RobotMap.EncoderDistanceMap.kFarScaleSeg1;
+			}
+		},
+		DRIVE_TURN1 {
+			@Override
+			public double getDriveData() {
+				if (OI.getStartPosition() == StartPosition.LEFT)
+					return -90.0; // turn left
+				else
+					return 90.0; // turn right
+			}
+		},
+		DRIVE_SEG2 {
+			@Override
+			public double getDriveData() {
+				return RobotMap.EncoderDistanceMap.kFarScaleSeg2;
+			}
+		},
+		DRIVE_TURN2 {
+			@Override
+			public double getDriveData() {
+				if (OI.getStartPosition() == StartPosition.LEFT)
+					return 90.0; // turn right
+				else
+					return -90.0; // turn left
+			}
+		},
+		DRIVE_SEG3 {
+			@Override
+			public double getDriveData() {
+				return RobotMap.EncoderDistanceMap.kFarScaleSeg3;
 			}
 		};
 

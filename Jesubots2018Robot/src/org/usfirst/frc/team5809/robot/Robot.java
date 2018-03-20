@@ -8,6 +8,7 @@
 package org.usfirst.frc.team5809.robot;
 
 import org.usfirst.frc.team5809.robot.RobotMap.StartPosition;
+import org.usfirst.frc.team5809.robot.RobotMap.TargetPreference;
 import org.usfirst.frc.team5809.robot.commands.PID.DriveStraightDistance;
 import org.usfirst.frc.team5809.robot.commands.PID.DriveStraightEncoders;
 import org.usfirst.frc.team5809.robot.commands.PID.DriveStraightTime;
@@ -41,17 +42,13 @@ public class Robot extends TimedRobot {
 	public static volatile Lift lift = null;
 	public static volatile Pneumatics pneumatics = null;
 
-	// public static final driveTrain kDriveTrain = new DriveTrain();
 	public static OI m_oi = null;
 
 	Command m_autonomousCommand;
 	SendableChooser<Command> m_chooser = new SendableChooser<>();
 	SendableChooser<String> m_position_chooser = new SendableChooser<>();
+	SendableChooser<String> m_preference_chooser = new SendableChooser<>();
 
-	/**
-	 * This function is run when the robot is first started up and should be
-	 * used for any initialization code.
-	 */
 	@Override
 	public void robotInit() {
 		driveTrain = DriveTrain.getInstance();
@@ -59,17 +56,7 @@ public class Robot extends TimedRobot {
 		lift = Lift.getInstance();
 		pneumatics = Pneumatics.getInstance();
 		driveTrain.setSafetyOff();
-		// OI.setSide(1);
-		// OI.setAutoInfo(OI.getSide());
-
-		/*
-		 * m_position_chooser.addDefault("Left",StartPosition.names()[
-		 * StartPosition.LEFT.ordinal()]);
-		 * m_position_chooser.addObject("Middle",StartPosition.names()[
-		 * StartPosition.MIDDLE.ordinal()]);
-		 * m_position_chooser.addObject("Right",StartPosition.names()[
-		 * StartPosition.RIGHT.ordinal()]);
-		 */
+		
 		int index = 0;
 		for (String s : StartPosition.names()) {
 			String display = Character.toUpperCase(s.charAt(0)) + s.substring(1).toLowerCase();
@@ -84,6 +71,21 @@ public class Robot extends TimedRobot {
 
 		}
 		SmartDashboard.putData("Robot Start Position", m_position_chooser);
+		
+		index = 0;
+		for (String s : TargetPreference.names()) {
+			String display = Character.toUpperCase(s.charAt(0)) + s.substring(1).toLowerCase();
+
+			if (index++ == 0) {
+				m_preference_chooser.addDefault(display, s);
+
+			} else {
+
+				m_preference_chooser.addObject(display, s);
+			}
+
+		}
+		SmartDashboard.putData("Robot Target Preference", m_preference_chooser);
 
 		m_chooser.addDefault("Default Auto", new DriveStraightTime());
 		m_chooser.addObject("Drive Straight Time", new DriveStraightTime());
@@ -101,7 +103,6 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putNumber("Drive Straight Time", RobotMap.defaultDriveTimeValue);
 		SmartDashboard.putNumber("DriveMag", RobotMap.defaultDriveMag);
 		SmartDashboard.putNumber("Pivot Turn Degrees", RobotMap.defaultPivotTurn);
-		SmartDashboard.putNumber("TEMP AUTO SIDE", 1.0);
 
 		CameraServer camServer = CameraServer.getInstance();
 		UsbCamera cam0 = null;
@@ -135,7 +136,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousInit() {
 		m_autonomousCommand = m_chooser.getSelected();
-		OI.setSide(SmartDashboard.getNumber("Side", 1.0));
+		OI.setTargetPreference(m_preference_chooser.getSelected());
 
 		System.out.println("Start Auto Init");
 		OI.setDriveTime(SmartDashboard.getNumber("Drive Straight Time", 0.0));
@@ -161,8 +162,6 @@ public class Robot extends TimedRobot {
 			driveTrain.getAhrs().zeroYaw();
 			driveTrain.resetEncoders();
 
-			// schedule the autonomous command (example)
-			// if (m_autonomousCommand != null) {
 			m_autonomousCommand.start();
 		} else {
 			System.out.println("Auto command is null");
@@ -238,6 +237,6 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putNumber("Right Encoder Position", driveTrain.getRightEncoderPosition());
 		SmartDashboard.putNumber("Left Position", driveTrain.getLeftEncoderPosition());
 		SmartDashboard.putNumber("Lift Encoder", lift.getEncoderValue());
-		SmartDashboard.putBoolean("JAWS OPEN?", OI.getJawsOpen());
+		SmartDashboard.putBoolean("Jaws Open?", OI.getJawsOpen());
 	}
 }

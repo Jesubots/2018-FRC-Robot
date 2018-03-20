@@ -229,7 +229,7 @@ public class DriveTrain extends Subsystem {
 		pivotTurnPID.setSetpoint(-targetDegree);
 		pivotTurnPID.setOutputRange(-dMag, dMag);// maximun motor power
 		setCoast();
-		pivotTurnPID.setAbsoluteTolerance(0.25);
+		pivotTurnPID.setAbsoluteTolerance(1.0);
 		pivotTurnPID.enable();
 		System.out.println("Enabled = " + pivotTurnPID.getPIDController().isEnabled());
 	}
